@@ -1,0 +1,162 @@
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&family=Dancing+Script:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Deep midnight mystical background */
+    --background: 280 50% 5%;
+    --foreground: 280 20% 95%;
+
+    /* Glass frosted cards */
+    --card: 280 40% 10%; 
+    --card-foreground: 280 20% 95%;
+
+    --popover: 280 40% 10%;
+    --popover-foreground: 280 20% 95%;
+
+    /* Vibrant Pop Pink */
+    --primary: 330 80% 70%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 270 50% 60%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 280 40% 15%;
+    --muted-foreground: 280 20% 70%;
+
+    --accent: 340 80% 75%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 280 40% 20%;
+    --input: 280 40% 20%;
+    --ring: 330 80% 70%;
+
+    --radius: 1.5rem;
+
+    --lavender: 275 80% 75%;
+    --lavender-soft: 275 40% 30%;
+    --sky: 210 80% 75%;
+    --sky-soft: 210 50% 30%;
+    --peach: 340 80% 75%;
+    --peach-soft: 340 60% 30%;
+    --gold: 45 90% 65%;
+    --rose: 350 80% 75%;
+
+    --glow-lavender: 0 0 30px hsl(275 80% 75% / 0.6);
+    --glow-sky: 0 0 30px hsl(210 80% 75% / 0.6);
+    --glow-peach: 0 0 30px hsl(340 80% 75% / 0.6);
+    --glow-gold: 0 0 30px hsl(45 90% 65% / 0.8);
+
+    --font-display: 'Dancing Script', cursive;
+    --font-body: 'Quicksand', sans-serif;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-body);
+    overflow-x: hidden;
+    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23ff69b4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>') 12 12, auto;
+  }
+  a, button, [role="button"], input, select, textarea {
+    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="%23ff69b4" stroke="%23ff1493" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>') 14 14, pointer !important;
+  }
+  h1, h2, h3 {
+    font-family: var(--font-display);
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: var(--font-display);
+  }
+  .font-body {
+    font-family: var(--font-body);
+  }
+  .glow-lavender {
+    box-shadow: var(--glow-lavender);
+  }
+  .glow-sky {
+    box-shadow: var(--glow-sky);
+  }
+  .glow-peach {
+    box-shadow: var(--glow-peach);
+  }
+  .glow-gold {
+    box-shadow: var(--glow-gold);
+  }
+  .text-glow {
+    text-shadow: 0 0 20px hsl(260 60% 70% / 0.6), 0 0 40px hsl(260 60% 70% / 0.3);
+  }
+  .text-glow-gold {
+    text-shadow: 0 0 20px hsl(45 90% 65% / 0.6), 0 0 40px hsl(45 90% 65% / 0.3);
+  }
+}
+
+/* Sparkle cursor */
+.sparkle-cursor {
+  pointer-events: none;
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: hsl(45 90% 65%);
+  box-shadow: 0 0 6px hsl(45 90% 65% / 0.8), 0 0 12px hsl(260 60% 70% / 0.4);
+  z-index: 9999;
+  animation: sparkle-fade 0.6s ease-out forwards;
+}
+
+@keyframes sparkle-fade {
+  0% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(0) translateY(-20px); opacity: 0; }
+}
+
+/* Starry background */
+.starry-bg {
+  background: radial-gradient(ellipse at 50% 0%, hsl(260 40% 12%) 0%, hsl(240 30% 5%) 100%);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: hsl(var(--lavender-soft));
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--lavender));
+  border-radius: 3px;
+}
+
+/* Section gradient backgrounds - Updated to Dark Rich Aesthetic */
+.section-lavender {
+  background: radial-gradient(circle at top right, hsl(275 60% 15%) 0%, transparent 60%);
+}
+.section-sky {
+  background: radial-gradient(circle at top left, hsl(210 60% 15%) 0%, transparent 60%);
+}
+.section-peach {
+  background: radial-gradient(circle at bottom right, hsl(340 60% 15%) 0%, transparent 60%);
+}
+.section-mixed {
+  background: radial-gradient(circle at center, hsl(280 50% 15%) 0%, transparent 70%);
+}
