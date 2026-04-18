@@ -159,28 +159,103 @@ const Index = () => {
 
   if (headphoneScreen) {
     return (
-      <div 
-        className="min-h-screen bg-neutral-950 flex flex-col items-center justify-center text-center px-4 cursor-pointer selection:bg-transparent"
+      <div
+        className="min-h-screen nc-bg-hero flex flex-col items-center justify-center text-center px-6 cursor-pointer selection:bg-transparent overflow-hidden relative"
         onClick={() => setHeadphoneScreen(false)}
       >
         <SparkleCursor />
+        {/* Ambient glow */}
+        <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at 50% 40%, rgba(210,188,255,0.08) 0%, transparent 65%)' }} />
+        {/* Floating particles */}
+        {[...Array(20)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute rounded-full"
+            style={{
+              width: Math.random() * 3 + 1,
+              height: Math.random() * 3 + 1,
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              background: ['#d2bcff','#ffb4a6','#e9c176'][i % 3],
+            }}
+            animate={{ opacity: [0, 0.6, 0], y: [0, -60, -120] }}
+            transition={{ duration: 6 + Math.random() * 6, repeat: Infinity, delay: Math.random() * 4 }}
+          />
+        ))}
+
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1.5 }}
+          className="z-10 flex flex-col items-center max-w-lg"
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
         >
-          <span className="text-6xl mb-6 block drop-shadow-2xl">🎧</span>
-          <h1 className="text-3xl md:text-5xl font-display text-pink-300 mb-4 tracking-wider">Hey {FRIEND_NAME}...</h1>
-          <p className="text-lg md:text-xl font-body text-white/80 mb-12 max-w-md mx-auto leading-relaxed">
-            Put your headphones on, turn up the volume, take a deep breath, and get ready for a surprise.
-          </p>
-          <motion.button
-            className="px-8 py-3 rounded-full bg-pink-500/20 text-pink-300 border border-pink-500/50 font-body tracking-widest text-sm hover:bg-pink-500/40 transition-colors"
-            animate={{ opacity: [0.6, 1, 0.6], boxShadow: ["0 0 0px #ec4899", "0 0 20px #ec4899", "0 0 0px #ec4899"] }}
-            transition={{ repeat: Infinity, duration: 2 }}
+          {/* Eyebrow */}
+          <motion.p
+            className="chapter-label mb-8 justify-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4, duration: 1 }}
           >
-            CLICK TO ENTER
+            A surprise for you
+          </motion.p>
+
+          {/* Headphone icon */}
+          <motion.span
+            className="text-fluid-hero mb-6 block"
+            style={{ filter: 'drop-shadow(0 0 24px rgba(255,180,166,0.5))' }}
+            animate={{ y: [0, -8, 0] }}
+            transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+          >
+            🎧
+          </motion.span>
+
+          {/* Title — Playfair Display gradient */}
+          <motion.h1
+            className="font-display font-black text-gradient leading-none tracking-tight mb-4"
+            style={{ fontSize: 'var(--t-5xl)', letterSpacing: '-0.02em' }}
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 1, ease: [0.16, 1, 0.3, 1] }}
+          >
+            Hey {FRIEND_NAME}...
+          </motion.h1>
+
+          {/* Script subtitle */}
+          <motion.p
+            className="font-script mb-10 leading-relaxed"
+            style={{ fontSize: 'var(--t-lead)', color: 'var(--nc-on-muted)' }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.6, duration: 1 }}
+          >
+            Put your headphones on, turn up the volume,<br />
+            take a deep breath, and get ready for a surprise.
+          </motion.p>
+
+          {/* CTA — Nocturne Cinema gradient button */}
+          <motion.button
+            className="btn-cinema px-8 py-4"
+            style={{ fontSize: 'var(--t-label)' }}
+            animate={{
+              boxShadow: [
+                '0 0 0 0 rgba(255,180,166,0.4)',
+                '0 0 28px 4px rgba(255,180,166,0.25)',
+                '0 0 0 0 rgba(255,180,166,0.4)',
+              ]
+            }}
+            transition={{ repeat: Infinity, duration: 2.5 }}
+          >
+            ✦ Click to Enter
           </motion.button>
+
+          <motion.p
+            className="font-body mt-6"
+            style={{ fontSize: 'var(--t-label)', color: 'rgba(216,194,190,0.3)', letterSpacing: '0.2em' }}
+            animate={{ opacity: [0.3, 0.7, 0.3] }}
+            transition={{ duration: 3, repeat: Infinity }}
+          >
+            TAP ANYWHERE TO CONTINUE
+          </motion.p>
         </motion.div>
       </div>
     );
@@ -223,35 +298,122 @@ const Index = () => {
               exit="exit"
               className="absolute inset-0 overflow-y-auto overflow-x-hidden [transform-style:preserve-3d]"
             >
-              <div className="min-h-full flex flex-col justify-between items-center py-20 px-4 md:px-8 max-w-6xl mx-auto">
-                <div className="w-full bg-background/50 backdrop-blur-sm rounded-3xl p-4 md:p-10 shadow-2xl border border-white/5">
+              <div className="min-h-full flex flex-col justify-between items-center py-16 px-4 md:px-8 max-w-6xl mx-auto">
+                {/* Section content — glass surface, no hard border */}
+                <div
+                  className="w-full rounded-2xl p-5 md:p-10 shadow-2xl"
+                  style={{
+                    background: 'var(--glass-bg)',
+                    backdropFilter: 'var(--glass-blur)',
+                    WebkitBackdropFilter: 'var(--glass-blur)',
+                    border: '1px solid var(--nc-outline)',
+                  }}
+                >
                   {sections[currentSection].component}
                 </div>
 
-                {/* Navigation Hint Footer */}
-                <div className="mt-16 mb-4 w-full flex flex-col items-center justify-center opacity-70">
-                  <div className="flex gap-8 items-center bg-card/60 px-8 py-3 rounded-full border border-white/10 backdrop-blur-md">
-                    <button onClick={goPrev} disabled={currentSection === 0} className="hover:scale-125 transition-transform disabled:opacity-20 text-2xl">
-                      👈
+                {/* ── Film-strip navigation (Nocturne Cinema) ── */}
+                <div className="mt-10 mb-4 w-full flex flex-col items-center justify-center">
+                  <div
+                    className="flex items-center gap-4 px-6 py-3 rounded-full"
+                    style={{
+                      background: 'var(--glass-bg)',
+                      backdropFilter: 'var(--glass-blur)',
+                      WebkitBackdropFilter: 'var(--glass-blur)',
+                      border: '1px solid var(--nc-outline)',
+                      boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+                    }}
+                  >
+                    {/* Prev arrow */}
+                    <button
+                      onClick={goPrev}
+                      disabled={currentSection === 0}
+                      className="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 disabled:opacity-20"
+                      style={{
+                        border: '1px solid var(--nc-outline)',
+                        color: 'var(--nc-on-muted)',
+                        fontSize: 'var(--t-sm)',
+                      }}
+                    >
+                      ←
                     </button>
-                    <span className="text-xs font-body tracking-[0.3em] uppercase opacity-70">
-                      Page {currentSection + 1} of {sections.length}
+
+                    {/* Film-strip dots */}
+                    <div className="flex items-center gap-1.5">
+                      {sections.map((_, i) => (
+                        <button
+                          key={i}
+                          onClick={() => {
+                            if (i > currentSection) { setDirection(1); }
+                            else { setDirection(-1); }
+                            setCurrentSection(i);
+                          }}
+                          style={{
+                            width: i === currentSection ? 'clamp(18px,4vw,26px)' : '6px',
+                            height: '6px',
+                            borderRadius: '9999px',
+                            background: i === currentSection
+                              ? (i === sections.length - 1 ? '#e9c176' : '#ffb4a6')
+                              : 'rgba(240,236,255,0.2)',
+                            boxShadow: i === currentSection
+                              ? (i === sections.length - 1
+                                  ? '0 0 10px rgba(233,193,118,0.7)'
+                                  : '0 0 10px rgba(255,180,166,0.6)')
+                              : 'none',
+                            transition: 'all 0.35s cubic-bezier(0.34,1.56,0.64,1)',
+                            border: 'none',
+                            cursor: 'pointer',
+                            flexShrink: 0,
+                          }}
+                          aria-label={`Go to section ${i + 1}`}
+                        />
+                      ))}
+                    </div>
+
+                    {/* Section counter */}
+                    <span
+                      className="font-body"
+                      style={{ fontSize: 'var(--t-label)', color: 'rgba(216,194,190,0.5)', letterSpacing: '0.15em' }}
+                    >
+                      {currentSection + 1} / {sections.length}
                     </span>
-                    <button onClick={goNext} disabled={currentSection === sections.length - 1} className="hover:scale-125 transition-transform disabled:opacity-20 text-2xl">
-                      👉
+
+                    {/* Next arrow */}
+                    <button
+                      onClick={goNext}
+                      disabled={currentSection === sections.length - 1}
+                      className="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 disabled:opacity-20"
+                      style={{
+                        border: '1px solid var(--nc-outline)',
+                        color: 'var(--nc-on-muted)',
+                        fontSize: 'var(--t-sm)',
+                      }}
+                    >
+                      →
                     </button>
                   </div>
-                  <p className="text-[10px] uppercase tracking-widest mt-4 opacity-50">Scroll down or use arrows to turn the page</p>
+
+                  <p
+                    className="font-body uppercase mt-4"
+                    style={{ fontSize: 'var(--t-label)', letterSpacing: '0.25em', color: 'rgba(216,194,190,0.3)' }}
+                  >
+                    Scroll · Arrow keys · Swipe
+                  </p>
 
                   {currentSection === sections.length - 1 && (
-                    <div className="text-center mt-16 pb-8">
-                      <p className="font-display text-3xl text-lavender pb-2 drop-shadow-md">
+                    <motion.div
+                      className="text-center mt-12 pb-8"
+                      initial={{ opacity: 0, y: 16 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 1 }}
+                    >
+                      <p className="font-display text-gradient leading-none mb-3" style={{ fontSize: 'var(--t-4xl)' }}>
                         Made with all my love 💙✨
                       </p>
-                      <p className="font-body text-sm text-white/50">
+                      <p className="font-script" style={{ fontSize: 'var(--t-lead)', color: 'var(--nc-on-muted)' }}>
                         For Priyanka — the rarest kind of person 🌸
                       </p>
-                    </div>
+                    </motion.div>
                   )}
                 </div>
               </div>

@@ -93,6 +93,12 @@ export default {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
       },
+      fontFamily: {
+        display: ["'Playfair Display'", "Georgia", "serif"],
+        script:  ["'Dancing Script'", "cursive"],
+        body:    ["'Manrope'", "system-ui", "sans-serif"],
+        sans:    ["'Manrope'", "system-ui", "sans-serif"],
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],
