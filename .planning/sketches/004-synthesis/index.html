@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sketch 004 — Synthesis ★</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&family=Manrope:wght@300;400;500;600&family=Dancing+Script:wght@600;700&display=swap">
+<style>
+/* ══════════════════════════════════════════════════
+   NOCTURNE CINEMA — Synthesis Design System
+   Sources: Sketch 001A (clamp type) + 002A (full-bleed)
+            + 003A (film-strip nav) + Stitch Nocturne Cinema
+   ══════════════════════════════════════════════════ */
+:root {
+  /* Stitch palette */
+  --bg:          #0f0d17;
+  --surface:     #14121d;
+  --surface-lo:  #1d1a25;
+  --surface-mid: #211e29;
+  --surface-hi:  #2b2834;
+  --surface-top: #36333f;
+
+  --primary:     #ffb4a6;
+  --primary-dim: #e29587;
+  --secondary:   #e9c176;
+  --tertiary:    #d2bcff;
+  --on-surface:  #e7e0f0;
+  --on-muted:    #d8c2be;
+  --outline:     #534340;
+
+  /* Extended cinematic accents */
+  --rose:        #fb7185;
+  --lavender:    #c084fc;
+  --gold:        #fbbf24;
+  --sky:         #7dd3fc;
+
+  /* Gradients */
+  --grad-text:   linear-gradient(135deg, #d2bcff 0%, #ffb4a6 45%, #e9c176 100%);
+  --grad-btn:    linear-gradient(135deg, #ffb4a6 0%, #e29587 100%);
+  --grad-glow:   radial-gradient(ellipse at 50% 0%, rgba(192,132,252,0.12) 0%, transparent 65%);
+
+  /* Fluid type — clamp(min, preferred-vw, max) */
+  --t-label:   clamp(0.6rem,  1.3vw, 0.72rem);
+  --t-caption: clamp(0.7rem,  1.6vw, 0.8rem);
+  --t-body:    clamp(0.875rem,2vw,   1rem);
+  --t-lead:    clamp(1rem,    2.5vw, 1.2rem);
+  --t-title:   clamp(1.25rem, 3.5vw, 1.75rem);
+  --t-h2:      clamp(1.75rem, 5vw,   3rem);
+  --t-h1:      clamp(2.5rem,  8vw,   5.5rem);
+  --t-hero:    clamp(3rem,    11vw,  7rem);
+
+  /* Spacing */
+  --pad-x:  clamp(20px, 6vw, 80px);
+  --pad-y:  clamp(48px, 9vw, 110px);
+
+  /* Glass */
+  --glass-bg:     rgba(54,51,63,0.45);
+  --glass-blur:   blur(14px);
+  --ghost-border: rgba(83,67,64,0.25);
+
+  /* Easing */
+  --ease-cinema: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--on-surface);
+  font-family: 'Manrope', system-ui, sans-serif;
+  overflow: hidden;
+  height: 100dvh;
+  overscroll-behavior: none;
+}
+
+/* ── PARTICLES ── */
+#particles {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  overflow: hidden;
+}
+.particle {
+  position: absolute;
+  width: 2px; height: 2px;
+  border-radius: 50%;
+  background: var(--tertiary);
+  opacity: 0;
+  animation: float-up var(--dur) var(--delay) ease-in-out infinite;
+}
+@keyframes float-up {
+  0%   { opacity: 0; transform: translateY(0) scale(0.5); }
+  20%  { opacity: 0.6; }
+  80%  { opacity: 0.3; }
+  100% { opacity: 0; transform: translateY(-90vh) scale(1.2); }
+}
+
+/* ══════════════════════════════════════════
+   STAGE — full-screen page container
+   ══════════════════════════════════════════ */
+#stage {
+  position: relative;
+  width: 100%;
+  height: 100dvh;
+  overflow: hidden;
+  perspective: 1200px;
+}
+
+/* ── PAGE ── */
+.page {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: var(--pad-y) var(--pad-x);
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  will-change: transform, opacity;
+  transition: opacity 0.8s var(--ease-cinema), transform 0.8s var(--ease-cinema);
+  transform: translateY(24px) scale(0.98);
+}
+.page.active {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+}
+.page.exit-up {
+  opacity: 0;
+  transform: translateY(-24px) scale(0.98);
+}
+
+/* ── PAGE BACKGROUNDS ── */
+.page-bg {
+  position: absolute; inset: 0; z-index: 0;
+  transition: opacity 1s var(--ease-cinema);
+}
+.page-content { position: relative; z-index: 2; }
+
+/* BG: Entry */
+.bg-entry {
+  background: radial-gradient(ellipse at 30% 60%, #2a0a3a 0%, #0f0d17 55%),
+              radial-gradient(ellipse at 80% 10%, #1a0520 0%, transparent 50%);
+}
+/* BG: Cake */
+.bg-cake {
+  background: radial-gradient(ellipse at 20% 80%, #1a0820 0%, #0f0d17 55%),
+              radial-gradient(ellipse at 90% 20%, #0a1020 0%, transparent 50%);
+}
+/* BG: Timeline */
+.bg-timeline {
+  background: radial-gradient(ellipse at 70% 50%, #0e1a1a 0%, #0f0d17 60%),
+              radial-gradient(ellipse at 10% 90%, #12100a 0%, transparent 50%);
+}
+/* BG: Polaroids */
+.bg-polaroids {
+  background: radial-gradient(ellipse at 50% 30%, #1a1020 0%, #0f0d17 55%),
+              radial-gradient(ellipse at 80% 80%, #0a0820 0%, transparent 50%);
+}
+/* BG: Galaxy */
+.bg-galaxy {
+  background: radial-gradient(ellipse at 40% 60%, #100820 0%, #0f0d17 55%),
+              radial-gradient(ellipse at 70% 10%, #08101a 0%, transparent 50%);
+}
+/* BG: Letter */
+.bg-letter {
+  background: radial-gradient(ellipse at 60% 40%, #1a0a18 0%, #0f0d17 55%),
+              radial-gradient(ellipse at 20% 80%, #0a0818 0%, transparent 50%);
+}
+
+/* Ambient glow overlay */
+.page::before {
+  content: '';
+  position: absolute; inset: 0; z-index: 1;
+  background: var(--grad-glow);
+  pointer-events: none;
+}
+
+/* Giant ghost chapter number */
+.ghost-num {
+  position: absolute;
+  right: calc(var(--pad-x) * 0.5);
+  bottom: -2vw;
+  font-size: clamp(100px, 20vw, 240px);
+  font-family: 'Playfair Display', serif;
+  font-weight: 900;
+  color: rgba(255,255,255,0.03);
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+  z-index: 1;
+  letter-spacing: -0.04em;
+}
+
+/* Top-right meta */
+.page-meta {
+  position: absolute;
+  top: var(--pad-y);
+  right: var(--pad-x);
+  z-index: 2;
+  text-align: right;
+}
+.meta-year {
+  font-size: var(--t-label);
+  letter-spacing: 0.25em;
+  color: rgba(216,194,190,0.4);
+  text-transform: uppercase;
+  font-family: 'Manrope', sans-serif;
+}
+
+/* Chapter line */
+.chapter {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: var(--t-label);
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--primary);
+  margin-bottom: clamp(16px, 3vw, 32px);
+  font-family: 'Manrope', sans-serif;
+}
+.chapter::before {
+  content: '';
+  flex: 0 0 clamp(24px, 4vw, 48px);
+  height: 1px;
+  background: var(--primary);
+  opacity: 0.6;
+}
+
+/* Hero title */
+.hero-title {
+  font-size: var(--t-hero);
+  font-family: 'Playfair Display', serif;
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -0.025em;
+  background: var(--grad-text);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: clamp(20px, 4vw, 40px);
+  max-width: 12ch;
+}
+
+/* Section title */
+.section-title {
+  font-size: var(--t-h1);
+  font-family: 'Playfair Display', serif;
+  font-weight: 900;
+  font-style: italic;
+  line-height: 1.0;
+  letter-spacing: -0.02em;
+  color: var(--on-surface);
+  margin-bottom: clamp(16px, 3vw, 28px);
+  max-width: 14ch;
+}
+.section-title .accent { color: var(--primary); font-style: normal; }
+
+/* Subtitle (script) */
+.script-sub {
+  font-size: var(--t-lead);
+  font-family: 'Dancing Script', cursive;
+  color: var(--on-muted);
+  margin-bottom: clamp(16px, 2.5vw, 28px);
+  max-width: 42ch;
+  line-height: 1.5;
+}
+
+/* Body */
+.body-text {
+  font-size: var(--t-body);
+  color: rgba(216,194,190,0.65);
+  max-width: 48ch;
+  line-height: 1.85;
+  letter-spacing: 0.015em;
+}
+
+/* CTA button */
+.cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: clamp(28px, 5vw, 48px);
+  padding: clamp(12px, 2vw, 16px) clamp(28px, 5vw, 44px);
+  font-size: var(--t-caption);
+  font-family: 'Manrope', sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #420e08;
+  background: var(--grad-btn);
+  border: none;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 0.25s var(--ease-cinema);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 0 rgba(255,180,166,0);
+  animation: btn-pulse 2.5s ease-in-out infinite;
+}
+@keyframes btn-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255,180,166,0.4); }
+  50%       { box-shadow: 0 0 28px 4px rgba(255,180,166,0.25); }
+}
+.cta-btn:hover {
+  transform: scale(1.04) translateY(-1px);
+  box-shadow: 0 8px 32px rgba(255,180,166,0.35);
+  animation: none;
+}
+.cta-btn:active { transform: scale(0.97); }
+
+/* Ghost / secondary button */
+.ghost-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: clamp(16px, 3vw, 28px);
+  padding: clamp(10px, 1.5vw, 14px) clamp(24px, 4vw, 36px);
+  font-size: var(--t-label);
+  font-family: 'Manrope', sans-serif;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--secondary);
+  background: transparent;
+  border: 1px solid rgba(83,67,64,0.3);
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 0.25s var(--ease-cinema);
+}
+.ghost-btn:hover {
+  background: rgba(233,193,118,0.08);
+  border-color: var(--secondary);
+  box-shadow: 0 0 20px rgba(233,193,118,0.15);
+}
+
+/* ── SPECIAL: Entry screen top text ── */
+.entry-top {
+  position: absolute;
+  top: var(--pad-y);
+  left: var(--pad-x);
+  z-index: 2;
+}
+
+/* ── SPECIAL: Cake emoji stage ── */
+.cake-stage {
+  font-size: clamp(60px, 14vw, 120px);
+  margin-bottom: clamp(20px, 4vw, 36px);
+  display: block;
+  filter: drop-shadow(0 0 24px rgba(255,180,166,0.5));
+  animation: cake-float 3s ease-in-out infinite;
+  cursor: pointer;
+  user-select: none;
+  transition: filter 0.3s;
+}
+@keyframes cake-float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-12px); }
+}
+.cake-stage:hover { filter: drop-shadow(0 0 40px rgba(255,180,166,0.8)); }
+.candles-lit { display: none; }
+.blown .candles-lit { display: inline; }
+.candles-unlit { display: inline; }
+.blown .candles-unlit { display: none; }
+
+/* ── SPECIAL: Timeline ── */
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(12px, 2.5vw, 20px);
+  margin-top: clamp(16px, 3vw, 28px);
+}
+.tl-item {
+  display: flex;
+  align-items: flex-start;
+  gap: clamp(12px, 2vw, 20px);
+  opacity: 0;
+  transform: translateX(-16px);
+  transition: all 0.5s var(--ease-cinema);
+}
+.tl-item.visible { opacity: 1; transform: translateX(0); }
+.tl-year {
+  flex: 0 0 clamp(44px, 7vw, 64px);
+  font-size: var(--t-label);
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  color: var(--secondary);
+  letter-spacing: 0.05em;
+  padding-top: 2px;
+}
+.tl-dot {
+  flex: 0 0 8px;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--primary);
+  margin-top: 5px;
+  box-shadow: 0 0 8px rgba(255,180,166,0.5);
+  flex-shrink: 0;
+}
+.tl-text {
+  font-size: var(--t-body);
+  color: var(--on-muted);
+  line-height: 1.6;
+}
+
+/* ── SPECIAL: Polaroids ── */
+.polaroids-grid {
+  display: flex;
+  gap: clamp(12px, 2.5vw, 20px);
+  flex-wrap: wrap;
+  margin-top: clamp(16px, 3vw, 28px);
+}
+.polaroid {
+  background: #f5f0e8;
+  padding: clamp(8px, 1.5vw, 12px);
+  padding-bottom: clamp(28px, 5vw, 44px);
+  border-radius: 2px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.5), 0 1px 4px rgba(0,0,0,0.3);
+  transform: rotate(var(--rot));
+  transition: transform 0.3s var(--ease-bounce), box-shadow 0.3s;
+  cursor: pointer;
+  flex: 1 1 clamp(80px, 18vw, 140px);
+  max-width: clamp(100px, 20vw, 160px);
+}
+.polaroid:hover {
+  transform: rotate(0deg) translateY(-8px) scale(1.05);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+  z-index: 10;
+}
+.polaroid-img {
+  width: 100%; aspect-ratio: 1;
+  background: var(--surface-hi);
+  border-radius: 1px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: clamp(24px, 6vw, 44px);
+  overflow: hidden;
+}
+.polaroid-label {
+  font-size: clamp(8px, 1.5vw, 11px);
+  color: #333;
+  text-align: center;
+  margin-top: clamp(6px, 1vw, 10px);
+  font-family: 'Dancing Script', cursive;
+  font-weight: 600;
+}
+
+/* ── SPECIAL: Stars (galaxy) ── */
+.stars-field {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(8px, 2vw, 16px);
+  margin-top: clamp(16px, 3vw, 28px);
+  max-width: 600px;
+}
+.star-card {
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, 1.5vw, 12px);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--ghost-border);
+  border-radius: 9999px;
+  padding: clamp(8px, 1.5vw, 12px) clamp(14px, 2.5vw, 22px);
+  font-size: var(--t-caption);
+  color: var(--on-muted);
+  cursor: pointer;
+  transition: all 0.25s var(--ease-cinema);
+}
+.star-card:hover {
+  border-color: rgba(209,188,255,0.4);
+  background: rgba(64,58,80,0.6);
+  color: var(--tertiary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(210,188,255,0.15);
+}
+.star-icon { font-size: clamp(14px, 2.5vw, 18px); }
+
+/* ── SPECIAL: Letter ── */
+.letter-card {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--ghost-border);
+  border-radius: clamp(12px, 2vw, 20px);
+  padding: clamp(20px, 4vw, 40px);
+  max-width: 560px;
+  margin-top: clamp(16px, 3vw, 28px);
+}
+.letter-text {
+  font-size: var(--t-title);
+  font-family: 'Dancing Script', cursive;
+  font-weight: 600;
+  color: var(--on-surface);
+  line-height: 1.6;
+}
+.letter-sig {
+  font-size: var(--t-body);
+  font-family: 'Dancing Script', cursive;
+  color: var(--secondary);
+  margin-top: clamp(16px, 3vw, 24px);
+  text-align: right;
+}
+
+/* ══════════════════════════════════════════
+   NAVIGATION — Film-strip dots (Sketch 003A)
+   + floating pill title (Sketch 003B hybrid)
+   ══════════════════════════════════════════ */
+#nav {
+  position: fixed;
+  bottom: clamp(20px, 4vw, 36px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, 2vw, 16px);
+}
+
+/* Current section name + progress */
+#nav-label-wrap {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--ghost-border);
+  border-radius: 9999px;
+  padding: clamp(8px, 1.5vw, 12px) clamp(16px, 3vw, 28px);
+  display: flex;
+  align-items: center;
+  gap: clamp(12px, 2.5vw, 24px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+
+/* Prev / Next arrows */
+.nav-arrow {
+  width: clamp(32px, 5vw, 40px);
+  height: clamp(32px, 5vw, 40px);
+  border-radius: 50%;
+  border: 1px solid var(--ghost-border);
+  background: transparent;
+  color: var(--on-muted);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  font-size: clamp(13px, 2.5vw, 16px);
+  transition: all 0.2s var(--ease-cinema);
+  flex-shrink: 0;
+}
+.nav-arrow:hover:not(:disabled) {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: rgba(255,180,166,0.08);
+}
+.nav-arrow:disabled { opacity: 0.2; cursor: not-allowed; }
+
+/* Film-strip dots */
+#nav-dots {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.nav-dot {
+  width: 6px; height: 6px;
+  border-radius: 9999px;
+  background: rgba(240,236,255,0.2);
+  cursor: pointer;
+  transition: all 0.35s var(--ease-bounce);
+  flex-shrink: 0;
+}
+.nav-dot.active {
+  width: clamp(18px, 4vw, 26px);
+  background: var(--primary);
+  box-shadow: 0 0 10px rgba(255,180,166,0.6);
+}
+.nav-dot:hover:not(.active) {
+  background: rgba(255,180,166,0.4);
+  transform: scale(1.3);
+}
+
+/* Section label */
+#nav-section-name {
+  font-size: var(--t-label);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--primary);
+  font-family: 'Manrope', sans-serif;
+  white-space: nowrap;
+  min-width: clamp(80px, 14vw, 120px);
+  text-align: center;
+}
+
+/* ── DARK MODE TOGGLE + MUSIC ── */
+#toolbar {
+  position: fixed;
+  top: clamp(16px, 3vw, 28px);
+  right: clamp(16px, 3vw, 28px);
+  z-index: 1001;
+  display: flex;
+  gap: clamp(8px, 1.5vw, 12px);
+  align-items: center;
+}
+.tb-btn {
+  width: clamp(36px, 5.5vw, 44px);
+  height: clamp(36px, 5.5vw, 44px);
+  border-radius: 50%;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--ghost-border);
+  color: var(--on-muted);
+  font-size: clamp(14px, 2.5vw, 18px);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s var(--ease-cinema);
+}
+.tb-btn:hover { border-color: var(--primary); color: var(--primary); }
+.tb-btn.active { background: rgba(255,180,166,0.15); border-color: var(--primary); color: var(--primary); }
+
+/* ── TOAST ── */
+#toast {
+  position: fixed;
+  top: clamp(70px, 10vw, 90px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(233,193,118,0.18);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(233,193,118,0.3);
+  border-radius: 9999px;
+  padding: 10px 24px;
+  font-size: var(--t-caption);
+  letter-spacing: 0.1em;
+  color: var(--secondary);
+  z-index: 2000;
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+  white-space: nowrap;
+}
+#toast.show { opacity: 1; }
+
+/* ── REVEAL VEIL (Stitch "Reveal Veil") ── */
+#veil {
+  position: fixed; inset: 0; z-index: 3000;
+  background: radial-gradient(ellipse at center, transparent 15%, #0f0d17 75%);
+  pointer-events: none; opacity: 0;
+  transition: opacity 1s var(--ease-cinema);
+  display: flex; align-items: center; justify-content: center;
+}
+#veil.show { opacity: 1; pointer-events: auto; }
+
+/* ── SKETCH TOOLBAR ── */
+#sketch-tools {
+  position: fixed; bottom: 12px; right: 12px; z-index: 9999;
+  font-family: system-ui; font-size: 12px;
+  background: rgba(0,0,0,0.85); color: white;
+  padding: 10px 14px; border-radius: 10px;
+  opacity: 0.35; transition: opacity 0.2s;
+  display: flex; flex-direction: column; gap: 8px; min-width: 140px;
+}
+#sketch-tools:hover { opacity: 1; }
+#sketch-tools label { font-size: 10px; opacity: 0.5; text-transform: uppercase; letter-spacing: 0.1em; }
+.vp-btns { display: flex; gap: 4px; }
+.vp-btns button, #sketch-tools select {
+  background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+  color: white; border-radius: 4px; padding: 3px 7px; font-size: 11px; cursor: pointer; flex: 1;
+}
+#vp-wrap { transition: max-width 0.4s; margin: 0 auto; }
+
+/* Confetti canvas */
+#c-canvas { position: fixed; inset: 0; z-index: 4000; pointer-events: none; }
+
+/* ── Responsive mobile tweaks ── */
+@media (max-width: 480px) {
+  #nav-section-name { display: none; }
+  .polaroid { flex: 1 1 clamp(70px, 22vw, 110px); }
+}
+</style>
+</head>
+<body>
+
+<!-- Canvas for confetti -->
+<canvas id="c-canvas"></canvas>
+
+<!-- Floating particles -->
+<div id="particles" aria-hidden="true"></div>
+
+<!-- Toolbar -->
+<div id="toolbar">
+  <button class="tb-btn" id="music-btn" onclick="toggleMusic()" title="Music">🎵</button>
+  <button class="tb-btn" id="hug-btn" onclick="sendHug()" title="Virtual Hug">🤗</button>
+</div>
+
+<!-- Toast -->
+<div id="toast" role="status" aria-live="polite"></div>
+
+<!-- Stage -->
+<div id="vp-wrap">
+<div id="stage">
+
+  <!-- ══ PAGE 0: ENTRY ══ -->
+  <div class="page active" id="page-0">
+    <div class="page-bg bg-entry"></div>
+    <div class="ghost-num">01</div>
+    <div class="entry-top">
+      <p style="font-size:var(--t-label);letter-spacing:0.3em;text-transform:uppercase;color:rgba(216,194,190,0.35);">A Surprise for</p>
+    </div>
+    <div class="page-meta"><p class="meta-year">2025 · Always</p></div>
+    <div class="page-content">
+      <p class="chapter">The Beginning</p>
+      <h1 class="hero-title">Happy<br>Birthday<br>Priyanka</h1>
+      <p class="script-sub">Put your headphones on 🎧<br>Turn up the volume &amp; take a breath...</p>
+      <button class="cta-btn" onclick="navigate(1)">
+        ✦ Enter the Surprise
+      </button>
+    </div>
+  </div>
+
+  <!-- ══ PAGE 1: CAKE ══ -->
+  <div class="page" id="page-1">
+    <div class="page-bg bg-cake"></div>
+    <div class="ghost-num">02</div>
+    <div class="page-meta"><p class="meta-year">Make a Wish</p></div>
+    <div class="page-content">
+      <p class="chapter">The Cake</p>
+      <span class="cake-stage" id="cake-emoji" onclick="blowCandles()" title="Blow the candles!">
+        <span class="candles-unlit">🎂</span>
+        <span class="candles-lit">🎊</span>
+      </span>
+      <h2 class="section-title">Make a <span class="accent">Wish</span></h2>
+      <p class="script-sub">Tap the cake to blow out the candles ✨</p>
+      <p class="body-text">Close your eyes, think of something wonderful, and make it count. You deserve every good thing coming your way this year.</p>
+    </div>
+  </div>
+
+  <!-- ══ PAGE 2: TIMELINE ══ -->
+  <div class="page" id="page-2">
+    <div class="page-bg bg-timeline"></div>
+    <div class="ghost-num">03</div>
+    <div class="page-meta"><p class="meta-year">Through the Years</p></div>
+    <div class="page-content">
+      <p class="chapter">The Timeline</p>
+      <h2 class="section-title">Years of <span class="accent">Laughter</span></h2>
+      <div class="timeline" id="timeline">
+        <div class="tl-item">
+          <span class="tl-year">Day 1</span>
+          <div class="tl-dot"></div>
+          <span class="tl-text">The day we met — and never really stopped talking.</span>
+        </div>
+        <div class="tl-item">
+          <span class="tl-year">Year 1</span>
+          <div class="tl-dot" style="background:var(--secondary);box-shadow:0 0 8px rgba(233,193,118,0.5)"></div>
+          <span class="tl-text">First adventure together. First disaster, too. Still worth it.</span>
+        </div>
+        <div class="tl-item">
+          <span class="tl-year">Year 2</span>
+          <div class="tl-dot" style="background:var(--tertiary);box-shadow:0 0 8px rgba(210,188,255,0.5)"></div>
+          <span class="tl-text">You taught me something about kindness I still carry.</span>
+        </div>
+        <div class="tl-item">
+          <span class="tl-year">Now</span>
+          <div class="tl-dot" style="background:var(--gold);box-shadow:0 0 12px rgba(251,191,36,0.6);width:10px;height:10px;margin-top:4px;"></div>
+          <span class="tl-text">Right here. Right now. This moment — still our best chapter yet.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PAGE 3: POLAROIDS ══ -->
+  <div class="page" id="page-3">
+    <div class="page-bg bg-polaroids"></div>
+    <div class="ghost-num">04</div>
+    <div class="page-meta"><p class="meta-year">Captured Moments</p></div>
+    <div class="page-content">
+      <p class="chapter">The Memories</p>
+      <h2 class="section-title">Every <span class="accent">Polaroid</span><br>Tells a Story</h2>
+      <div class="polaroids-grid">
+        <div class="polaroid" style="--rot:-3deg">
+          <div class="polaroid-img">🌅</div>
+          <p class="polaroid-label">That sunset</p>
+        </div>
+        <div class="polaroid" style="--rot:2deg">
+          <div class="polaroid-img">☕</div>
+          <p class="polaroid-label">Coffee runs</p>
+        </div>
+        <div class="polaroid" style="--rot:-1.5deg">
+          <div class="polaroid-img">🎭</div>
+          <p class="polaroid-label">The show</p>
+        </div>
+        <div class="polaroid" style="--rot:3deg">
+          <div class="polaroid-img">🌸</div>
+          <p class="polaroid-label">Spring walk</p>
+        </div>
+        <div class="polaroid" style="--rot:-2deg">
+          <div class="polaroid-img">🎵</div>
+          <p class="polaroid-label">Our playlist</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PAGE 4: GALAXY ══ -->
+  <div class="page" id="page-4">
+    <div class="page-bg bg-galaxy"></div>
+    <div class="ghost-num">05</div>
+    <div class="page-meta"><p class="meta-year">Why You Matter</p></div>
+    <div class="page-content">
+      <p class="chapter">The Galaxy</p>
+      <h2 class="section-title">You are<br><span class="accent">Infinite</span></h2>
+      <p class="script-sub">Tap a star to reveal a reason ✦</p>
+      <div class="stars-field">
+        <div class="star-card" onclick="revealStar(this)" data-msg="Your laugh is contagious 😄">
+          <span class="star-icon">⭐</span> Your laugh
+        </div>
+        <div class="star-card" onclick="revealStar(this)" data-msg="Your kindness changes rooms 💜">
+          <span class="star-icon">✨</span> Your kindness
+        </div>
+        <div class="star-card" onclick="revealStar(this)" data-msg="Your courage is quiet and huge 🦋">
+          <span class="star-icon">💫</span> Your courage
+        </div>
+        <div class="star-card" onclick="revealStar(this)" data-msg="Your empathy is a superpower 🌙">
+          <span class="star-icon">🌟</span> Your heart
+        </div>
+        <div class="star-card" onclick="revealStar(this)" data-msg="Your energy just makes everything better ☀️">
+          <span class="star-icon">🪐</span> Your energy
+        </div>
+        <div class="star-card" onclick="revealStar(this)" data-msg="You make ordinary days extraordinary 🎆">
+          <span class="star-icon">🌠</span> Your presence
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PAGE 5: LETTER ══ -->
+  <div class="page" id="page-5">
+    <div class="page-bg bg-letter"></div>
+    <div class="ghost-num">06</div>
+    <div class="page-meta"><p class="meta-year">Always &amp; Forever</p></div>
+    <div class="page-content">
+      <p class="chapter">The Letter</p>
+      <h2 class="section-title" style="font-size:var(--t-h2);">Written <span class="accent">just<br>for you</span></h2>
+      <div class="letter-card">
+        <p class="letter-text">"Happy Birthday, Priyanka.<br><br>You are the rarest kind of person — the kind who makes every room feel warmer just by being in it. Thank you for existing, for laughing, and for being exactly who you are.<br><br>Here's to another year of you being outrageously wonderful."</p>
+        <p class="letter-sig">— Made with all my love 💙✨</p>
+      </div>
+      <button class="ghost-btn" onclick="celebrate()" style="margin-top:clamp(16px,3vw,28px);">
+        🎉 Celebrate Again
+      </button>
+    </div>
+  </div>
+
+</div><!-- /stage -->
+</div><!-- /vp-wrap -->
+
+<!-- Film-strip navigation -->
+<nav id="nav" aria-label="Page navigation">
+  <button class="nav-arrow" id="nav-prev" onclick="navigate(-1)" disabled aria-label="Previous">←</button>
+  <div id="nav-label-wrap">
+    <div id="nav-dots" role="tablist">
+      <div class="nav-dot active" onclick="goTo(0)" role="tab" aria-label="Entry" title="Entry"></div>
+      <div class="nav-dot" onclick="goTo(1)" role="tab" aria-label="Cake" title="Cake"></div>
+      <div class="nav-dot" onclick="goTo(2)" role="tab" aria-label="Timeline" title="Timeline"></div>
+      <div class="nav-dot" onclick="goTo(3)" role="tab" aria-label="Memories" title="Memories"></div>
+      <div class="nav-dot" onclick="goTo(4)" role="tab" aria-label="Galaxy" title="Galaxy"></div>
+      <div class="nav-dot" onclick="goTo(5)" role="tab" aria-label="Letter" title="Letter"></div>
+    </div>
+    <span id="nav-section-name">The Beginning</span>
+  </div>
+  <button class="nav-arrow" id="nav-next" onclick="navigate(1)" aria-label="Next">→</button>
+</nav>
+
+<!-- Sketch toolbar -->
+<div id="sketch-tools" onmouseenter="this.style.opacity='1'" onmouseleave="this.style.opacity='0.35'">
+  <div>
+    <label>Viewport Preview</label>
+    <div class="vp-btns">
+      <button onclick="setVP(375)" title="Mobile 375px">📱</button>
+      <button onclick="setVP(768)" title="Tablet 768px">💻</button>
+      <button onclick="setVP(null)" title="Full width">🖥</button>
+    </div>
+  </div>
+  <div style="font-size:10px;opacity:0.4;text-align:center;">Sketch 004 ★ Synthesis</div>
+</div>
+
+<script>
+/* ══════════════════════════════
+   STATE
+   ══════════════════════════════ */
+const PAGES = 6;
+const SECTION_NAMES = ['The Beginning','Make a Wish','The Timeline','The Memories','The Galaxy','The Letter'];
+let current = 0;
+let isAnimating = false;
+let musicOn = false;
+
+/* ══════════════════════════════
+   PARTICLES
+   ══════════════════════════════ */
+(function spawnParticles() {
+  const container = document.getElementById('particles');
+  const colors = ['#d2bcff','#ffb4a6','#e9c176','#fb7185','#7dd3fc'];
+  for (let i = 0; i < 55; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.cssText = `
+      left: ${Math.random() * 100}%;
+      top: ${80 + Math.random() * 20}%;
+      --dur: ${6 + Math.random() * 14}s;
+      --delay: ${Math.random() * 8}s;
+      background: ${colors[Math.floor(Math.random() * colors.length)]};
+      opacity: 0;
+      width: ${1 + Math.random() * 3}px;
+      height: ${1 + Math.random() * 3}px;
+    `;
+    container.appendChild(p);
+  }
+})();
+
+/* ══════════════════════════════
+   NAVIGATION
+   ══════════════════════════════ */
+function navigate(dir) {
+  const next = current + dir;
+  if (next < 0 || next >= PAGES || isAnimating) return;
+  goTo(next);
+}
+
+function goTo(idx) {
+  if (idx === current || isAnimating) return;
+  isAnimating = true;
+
+  const fromPage = document.getElementById('page-' + current);
+  const toPage   = document.getElementById('page-' + idx);
+
+  fromPage.classList.remove('active');
+  fromPage.classList.add('exit-up');
+
+  requestAnimationFrame(() => {
+    toPage.classList.add('active');
+    setTimeout(() => {
+      fromPage.classList.remove('exit-up');
+      isAnimating = false;
+    }, 800);
+  });
+
+  current = idx;
+  updateNav();
+  triggerPageEffects(idx);
+}
+
+function updateNav() {
+  document.getElementById('nav-prev').disabled = current === 0;
+  document.getElementById('nav-next').disabled = current === PAGES - 1;
+  document.getElementById('nav-section-name').textContent = SECTION_NAMES[current];
+  document.querySelectorAll('.nav-dot').forEach((d, i) => {
+    d.classList.toggle('active', i === current);
+    // Last dot goes gold on final page
+    if (i === PAGES - 1 && current === PAGES - 1) {
+      d.style.background = '#e9c176';
+      d.style.boxShadow = '0 0 12px rgba(233,193,118,0.7)';
+    } else if (i === PAGES - 1) {
+      d.style.background = '';
+      d.style.boxShadow = '';
+    }
+  });
+}
+
+/* ══════════════════════════════
+   PAGE EFFECTS
+   ══════════════════════════════ */
+function triggerPageEffects(idx) {
+  if (idx === 1) { // Cake — small confetti
+    miniConfetti(50, ['#ffb4a6','#e29587','#f5c6c0']);
+  }
+  if (idx === 2) { // Timeline — stagger items
+    const items = document.querySelectorAll('.tl-item');
+    items.forEach((item, i) => {
+      item.classList.remove('visible');
+      setTimeout(() => item.classList.add('visible'), 200 + i * 180);
+    });
+  }
+  if (idx === 5) { // Letter — big celebration
+    celebrate();
+  }
+}
+
+/* ══════════════════════════════
+   CONFETTI
+   ══════════════════════════════ */
+const canvas = document.getElementById('c-canvas');
+const ctx = canvas.getContext('2d');
+let pieces = [];
+
+function resizeCanvas() {
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+function miniConfetti(count, cols) {
+  for (let i = 0; i < count; i++) {
+    pieces.push({
+      x: Math.random() * canvas.width,
+      y: -10,
+      vx: (Math.random() - 0.5) * 4,
+      vy: 2 + Math.random() * 4,
+      rot: Math.random() * 360,
+      rotV: (Math.random() - 0.5) * 8,
+      size: 5 + Math.random() * 6,
+      color: cols[Math.floor(Math.random() * cols.length)],
+      life: 1
+    });
+  }
+  if (!animating) animateConfetti();
+}
+
+let animating = false;
+function animateConfetti() {
+  animating = true;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  pieces = pieces.filter(p => p.life > 0);
+  pieces.forEach(p => {
+    p.x += p.vx; p.y += p.vy; p.vy += 0.12;
+    p.rot += p.rotV; p.life -= 0.012;
+    ctx.save();
+    ctx.globalAlpha = Math.max(0, p.life);
+    ctx.translate(p.x, p.y);
+    ctx.rotate(p.rot * Math.PI / 180);
+    ctx.fillStyle = p.color;
+    ctx.fillRect(-p.size/2, -p.size/4, p.size, p.size/2);
+    ctx.restore();
+  });
+  if (pieces.length > 0) requestAnimationFrame(animateConfetti);
+  else { animating = false; ctx.clearRect(0, 0, canvas.width, canvas.height); }
+}
+
+function celebrate() {
+  miniConfetti(180, ['#ffb4a6','#e9c176','#d2bcff','#fb7185','#fbbf24','#7dd3fc']);
+  showToast('🎉 Happy Birthday Priyanka! 💜');
+}
+
+/* ══════════════════════════════
+   INTERACTIONS
+   ══════════════════════════════ */
+function blowCandles() {
+  const cake = document.getElementById('cake-emoji');
+  if (cake.classList.contains('blown')) return;
+  cake.classList.add('blown');
+  miniConfetti(120, ['#ffb4a6','#fbbf24','#d2bcff','#fb7185']);
+  showToast('🎂 Wish made! ✨');
+}
+
+function revealStar(el) {
+  showToast(el.dataset.msg);
+  el.style.borderColor = 'rgba(210,188,255,0.6)';
+  el.style.background = 'rgba(70,60,90,0.6)';
+  el.style.color = '#d2bcff';
+  el.querySelector('.star-icon').textContent = '★';
+}
+
+function sendHug() {
+  miniConfetti(80, ['#fb7185','#ffb4a6','#fbbf24']);
+  showToast('💜 Virtual hug sent right to you!');
+  const btn = document.getElementById('hug-btn');
+  btn.classList.add('active');
+  setTimeout(() => btn.classList.remove('active'), 1200);
+}
+
+function toggleMusic() {
+  musicOn = !musicOn;
+  const btn = document.getElementById('music-btn');
+  btn.classList.toggle('active', musicOn);
+  btn.textContent = musicOn ? '🎶' : '🎵';
+  showToast(musicOn ? '🎵 Music playing...' : '🔇 Music paused');
+}
+
+/* ══════════════════════════════
+   TOAST
+   ══════════════════════════════ */
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+/* ══════════════════════════════
+   KEYBOARD + WHEEL
+   ══════════════════════════════ */
+window.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); navigate(1); }
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')                    { e.preventDefault(); navigate(-1); }
+});
+
+let lastWheel = 0;
+window.addEventListener('wheel', e => {
+  const now = Date.now();
+  if (now - lastWheel < 800) return;
+  if (Math.abs(e.deltaY) < 30) return;
+  lastWheel = now;
+  if (e.deltaY > 0) navigate(1); else navigate(-1);
+}, { passive: true });
+
+/* Touch swipe */
+let touchStartX = 0, touchStartY = 0;
+window.addEventListener('touchstart', e => {
+  touchStartX = e.touches[0].clientX;
+  touchStartY = e.touches[0].clientY;
+}, { passive: true });
+window.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  const dy = e.changedTouches[0].clientY - touchStartY;
+  if (Math.abs(dx) < 30 && Math.abs(dy) < 30) return;
+  if (Math.abs(dy) > Math.abs(dx)) {
+    if (dy < -40) navigate(1);
+    if (dy >  40) navigate(-1);
+  } else {
+    if (dx < -40) navigate(1);
+    if (dx >  40) navigate(-1);
+  }
+}, { passive: true });
+
+/* ══════════════════════════════
+   VIEWPORT PREVIEW
+   ══════════════════════════════ */
+function setVP(w) {
+  const wrap = document.getElementById('vp-wrap');
+  wrap.style.maxWidth = w ? w + 'px' : '';
+  wrap.style.margin = w ? '0 auto' : '';
+  wrap.style.outline = w ? '2px dashed rgba(192,132,252,0.3)' : '';
+}
+
+/* Init */
+updateNav();
+</script>
+</body>
+</html>

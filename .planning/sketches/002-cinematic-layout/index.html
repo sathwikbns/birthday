@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sketch 002 — Cinematic Section Layout</title>
+<link rel="stylesheet" href="../themes/default.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-body);
+    padding-top: 56px;
+    min-height: 100vh;
+  }
+
+  /* ── Variant Nav ── */
+  #variant-nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 9998;
+    background: rgba(8,6,16,0.95); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--color-border);
+    padding: 10px 16px; display: flex; gap: 8px; align-items: center;
+    font-family: var(--font-body); font-size: 13px;
+  }
+  .variant-tab {
+    padding: 6px 14px; border-radius: var(--radius-full);
+    border: 1px solid var(--color-border);
+    background: transparent; color: var(--color-text-muted);
+    cursor: pointer; transition: all 0.2s; font-family: var(--font-body); font-size: 12px;
+  }
+  .variant-tab:hover { border-color: var(--color-primary); color: var(--color-primary); }
+  .variant-tab.active {
+    background: var(--color-primary); color: #fff;
+    border-color: var(--color-primary); box-shadow: var(--glow-lavender);
+  }
+  .nav-label { color: var(--color-text-faint); font-size: 11px; margin-right: 8px; text-transform: uppercase; letter-spacing: 0.1em; }
+  .variant { display: none; }
+  .variant.active { display: block; }
+
+  /* ═══════════════════════════════════════
+     VARIANT A — Full Bleed Cinematic Dark
+  ════════════════════════════════════════ */
+  .va-section {
+    min-height: 100vh;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    padding: clamp(32px,6vw,80px);
+    position: relative; overflow: hidden;
+  }
+  .va-section-1 {
+    background: linear-gradient(160deg, #0d0520 0%, #1d0a35 60%, #080610 100%);
+  }
+  .va-section-2 {
+    background: linear-gradient(200deg, #08100d 0%, #0a1f1a 60%, #080610 100%);
+  }
+  .va-section-3 {
+    background: linear-gradient(120deg, #100820 0%, #1a0825 50%, #0a0515 100%);
+  }
+  /* Giant background number */
+  .va-bg-num {
+    position: absolute; right: -2vw; bottom: -4vw;
+    font-size: clamp(120px, 22vw, 280px);
+    font-family: var(--font-display); font-weight: 900;
+    color: rgba(255,255,255,0.03);
+    line-height: 1; pointer-events: none; user-select: none;
+    letter-spacing: -0.05em;
+  }
+  /* Subtle gradient line at top */
+  .va-section::before {
+    content: ''; position: absolute; top: 0; left: clamp(32px,6vw,80px); right: clamp(32px,6vw,80px);
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+    opacity: 0.3;
+  }
+  .va-chapter {
+    font-size: clamp(0.6rem, 1.5vw, 0.75rem);
+    letter-spacing: 0.35em; text-transform: uppercase;
+    color: var(--color-primary); margin-bottom: 20px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .va-chapter::before {
+    content: ''; flex: 0 0 40px; height: 1px; background: var(--color-primary); opacity: 0.5;
+  }
+  .va-title {
+    font-size: clamp(2.5rem, 8vw, 6.5rem);
+    font-family: var(--font-display); font-weight: 900;
+    line-height: 1.0; letter-spacing: -0.02em;
+    background: var(--grad-text);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text; margin-bottom: 24px;
+    max-width: 12ch;
+  }
+  .va-body {
+    font-size: clamp(0.9rem, 2.2vw, 1.1rem);
+    color: var(--color-text-muted); max-width: 50ch; line-height: 1.8;
+  }
+  .va-meta {
+    position: absolute; top: clamp(32px,6vw,80px); right: clamp(32px,6vw,80px);
+    text-align: right;
+  }
+  .va-year {
+    font-size: clamp(0.7rem, 1.8vw, 0.9rem);
+    font-family: var(--font-body); color: var(--color-text-faint);
+    letter-spacing: 0.2em;
+  }
+
+
+  /* ═══════════════════════════════════════
+     VARIANT B — Magazine Left Rail
+  ════════════════════════════════════════ */
+  .vb-section {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: clamp(60px, 8vw, 120px) 1fr;
+    position: relative;
+    background: var(--color-bg);
+    border-bottom: 1px solid var(--color-border);
+  }
+  .vb-rail {
+    background: var(--color-surface);
+    border-right: 1px solid var(--color-border);
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px 0;
+    position: relative;
+  }
+  .vb-rail-text {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    transform: rotate(180deg);
+    font-size: clamp(0.55rem, 1.2vw, 0.7rem);
+    letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--color-primary);
+  }
+  .vb-rail-num {
+    position: absolute; bottom: 24px;
+    font-size: clamp(0.6rem, 1.5vw, 0.75rem);
+    font-family: var(--font-display); font-weight: 900;
+    color: var(--color-text-faint);
+  }
+  .vb-content {
+    padding: clamp(40px, 7vw, 100px) clamp(24px, 5vw, 80px);
+    display: flex; flex-direction: column; justify-content: center;
+    position: relative;
+  }
+  .vb-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: clamp(0.6rem, 1.5vw, 0.72rem);
+    letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--color-rose); margin-bottom: 24px;
+  }
+  .vb-tag::after { content: ''; flex: 0 0 32px; height: 1px; background: var(--color-rose); opacity: 0.5; }
+  .vb-title {
+    font-size: clamp(2rem, 6vw, 5rem);
+    font-family: var(--font-display); font-weight: 900;
+    line-height: 1.05; max-width: 14ch;
+    color: var(--color-text); margin-bottom: 20px;
+  }
+  .vb-title em { font-style: italic; color: var(--color-primary); }
+  .vb-lead {
+    font-size: clamp(1rem, 2.5vw, 1.25rem);
+    font-family: var(--font-script); color: var(--color-text-muted);
+    max-width: 45ch; line-height: 1.7; margin-bottom: 16px;
+  }
+  .vb-body {
+    font-size: clamp(0.875rem, 2vw, 1rem);
+    color: var(--color-text-faint); max-width: 52ch; line-height: 1.9;
+  }
+
+
+  /* ═══════════════════════════════════════
+     VARIANT C — Centered Editorial
+  ════════════════════════════════════════ */
+  .vc-section {
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center;
+    padding: clamp(60px,10vw,120px) clamp(24px,6vw,80px);
+    background: var(--color-bg);
+    border-bottom: 1px solid var(--color-border);
+    position: relative;
+  }
+  .vc-section::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(192,132,252,0.08) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .vc-divider {
+    width: 1px; height: clamp(40px, 6vw, 80px);
+    background: linear-gradient(to bottom, transparent, var(--color-primary), transparent);
+    margin: 0 auto 32px;
+  }
+  .vc-num {
+    font-size: clamp(0.6rem, 1.5vw, 0.7rem);
+    letter-spacing: 0.4em; text-transform: uppercase;
+    color: var(--color-text-faint); margin-bottom: 16px;
+  }
+  .vc-title {
+    font-size: clamp(2.5rem, 9vw, 7.5rem);
+    font-family: var(--font-display); font-weight: 900; font-style: italic;
+    line-height: 1.0; letter-spacing: -0.03em;
+    background: var(--grad-text);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    margin-bottom: 32px; max-width: 15ch;
+  }
+  .vc-rule {
+    width: clamp(40px, 8vw, 100px); height: 2px;
+    background: linear-gradient(90deg, var(--color-primary), var(--color-rose));
+    margin: 0 auto 32px; border-radius: 2px;
+  }
+  .vc-lead {
+    font-size: clamp(1rem, 2.5vw, 1.4rem);
+    font-family: var(--font-script); color: var(--color-text-muted);
+    max-width: 40ch; line-height: 1.7; margin-bottom: 20px;
+  }
+  .vc-body {
+    font-size: clamp(0.875rem, 2vw, 1rem);
+    color: var(--color-text-faint); max-width: 50ch; line-height: 1.9;
+  }
+
+  /* Scroll indicator */
+  .scroll-hint {
+    position: absolute; bottom: 32px; left: 50%;
+    transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--color-text-faint); opacity: 0.6;
+  }
+  .scroll-hint::after {
+    content: ''; width: 1px; height: 40px;
+    background: linear-gradient(to bottom, var(--color-text-faint), transparent);
+  }
+
+  /* ── Sketch Toolbar ── */
+  #sketch-tools {
+    position: fixed; bottom: 12px; right: 12px; z-index: 9999;
+    font-family: system-ui; font-size: 12px;
+    background: rgba(0,0,0,0.8); color: white;
+    padding: 10px 14px; border-radius: 10px;
+    opacity: 0.4; transition: opacity 0.2s;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  #sketch-tools:hover { opacity: 1; }
+  #sketch-tools label { font-size: 10px; opacity: 0.6; text-transform: uppercase; letter-spacing: 0.1em; }
+  #sketch-tools select, #sketch-tools button {
+    background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+    color: white; border-radius: 4px; padding: 3px 6px; font-size: 11px; cursor: pointer;
+    width: 100%;
+  }
+  .vp-btns { display: flex; gap: 4px; }
+  .vp-btns button { flex: 1; }
+  #viewport-wrap { transition: max-width 0.4s; margin: 0 auto; }
+</style>
+</head>
+<body>
+
+<!-- ── Variant Nav ── -->
+<div id="variant-nav">
+  <span class="nav-label">Sketch 002</span>
+  <button class="variant-tab active" onclick="showVariant('a', this)">A: Full Bleed Dark</button>
+  <button class="variant-tab" onclick="showVariant('b', this)">B: Magazine Rail</button>
+  <button class="variant-tab" onclick="showVariant('c', this)">C: Centered Editorial</button>
+</div>
+
+<div id="viewport-wrap">
+
+  <!-- ══ VARIANT A: Full Bleed Cinematic ══ -->
+  <div id="variant-a" class="variant active">
+
+    <section class="va-section va-section-1">
+      <div class="va-bg-num">01</div>
+      <div class="va-meta"><p class="va-year">Year One</p></div>
+      <p class="va-chapter">Chapter I · The Beginning</p>
+      <h1 class="va-title">Happy<br>Birthday<br>Priyanka</h1>
+      <p class="va-body">This is Variant A — full-bleed sections where each page bleeds to all four edges. No cards, no containers. The content sits directly on dramatic gradient backgrounds. Cinematic and immersive.</p>
+    </section>
+
+    <section class="va-section va-section-2">
+      <div class="va-bg-num">02</div>
+      <div class="va-meta"><p class="va-year">Through the years</p></div>
+      <p class="va-chapter">Chapter II · The Timeline</p>
+      <h2 class="va-title">Years of<br>Memories</h2>
+      <p class="va-body">Each section gets its own color story — subtle shifts in gradient temperature. This one breathes in deep forest greens and midnight blues. Every scroll is a new world.</p>
+    </section>
+
+    <section class="va-section va-section-3">
+      <div class="va-bg-num">03</div>
+      <div class="va-meta"><p class="va-year">Always</p></div>
+      <p class="va-chapter">Chapter III · The Letter</p>
+      <h2 class="va-title">Words<br>from the<br>heart</h2>
+      <p class="va-body">The third section shifts to deep plum. Content stacks comfortably at the bottom-left — like a movie caption. Big type, lots of space, nothing competing for attention.</p>
+    </section>
+
+  </div>
+
+  <!-- ══ VARIANT B: Magazine Rail ══ -->
+  <div id="variant-b" class="variant">
+
+    <div class="vb-section">
+      <div class="vb-rail">
+        <span class="vb-rail-text">Birthday · 2025</span>
+        <span class="vb-rail-num">01</span>
+      </div>
+      <div class="vb-content">
+        <p class="vb-tag">For Priyanka</p>
+        <h1 class="vb-title">Happy <em>Birthday</em></h1>
+        <p class="vb-lead">You are the kind of person the universe writes poems about.</p>
+        <p class="vb-body">Variant B has a permanent left rail — like a magazine spine. The chapter number and running title live there. Main content has generous margins. Feels editorial, like a beautifully laid-out book.</p>
+      </div>
+    </div>
+
+    <div class="vb-section">
+      <div class="vb-rail" style="background: var(--color-surface-2);">
+        <span class="vb-rail-text">Memories · Together</span>
+        <span class="vb-rail-num">02</span>
+      </div>
+      <div class="vb-content">
+        <p class="vb-tag" style="color: var(--color-gold);">The Timeline</p>
+        <h2 class="vb-title">Years of <em>Laughter</em></h2>
+        <p class="vb-lead">Everything we've been through, captured in moments.</p>
+        <p class="vb-body">Each section gets a different rail color and accent. Structural regularity but visual variety. The grid is always there, like a reliable spine holding everything together.</p>
+      </div>
+    </div>
+
+    <div class="vb-section">
+      <div class="vb-rail" style="background: #0d0820;">
+        <span class="vb-rail-text">From the heart</span>
+        <span class="vb-rail-num">03</span>
+      </div>
+      <div class="vb-content">
+        <p class="vb-tag" style="color: var(--color-sky);">The Letter</p>
+        <h2 class="vb-title">Written <em>Just for You</em></h2>
+        <p class="vb-lead">Some things are better written than spoken.</p>
+        <p class="vb-body">The rail approach has a downside on mobile: the rail gets very thin. But it can collapse to just a top tag on small screens — maintaining the editorial feel without losing space.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══ VARIANT C: Centered Editorial ══ -->
+  <div id="variant-c" class="variant">
+
+    <section class="vc-section">
+      <div class="vc-divider"></div>
+      <p class="vc-num">001 / The Beginning</p>
+      <h1 class="vc-title">Happy<br>Birthday<br>Priyanka</h1>
+      <div class="vc-rule"></div>
+      <p class="vc-lead">You are the kind of person the universe writes poems about.</p>
+      <p class="vc-body">Variant C — everything centered, like a film title sequence. The title is the whole screen. The rule separates the headline from the body. Nothing competes. Maximum drama.</p>
+      <div class="scroll-hint">Scroll</div>
+    </section>
+
+    <section class="vc-section" style="background: linear-gradient(to bottom, var(--color-bg), #0d0a20);">
+      <div class="vc-divider" style="background: linear-gradient(to bottom, transparent, var(--color-rose), transparent);"></div>
+      <p class="vc-num">002 / The Timeline</p>
+      <h2 class="vc-title">Our<br>Story</h2>
+      <div class="vc-rule" style="background: linear-gradient(90deg, var(--color-rose), var(--color-gold));"></div>
+      <p class="vc-lead">Every moment we've shared lives here, in colour and light.</p>
+      <p class="vc-body">Each section gets its own gradient accent for the vertical rule and chapter line. The centering creates symmetry and balance — like a poem on a page.</p>
+      <div class="scroll-hint" style="color: var(--color-rose); opacity: 0.4;">Scroll</div>
+    </section>
+
+    <section class="vc-section">
+      <div class="vc-divider" style="background: linear-gradient(to bottom, transparent, var(--color-gold), transparent);"></div>
+      <p class="vc-num">003 / The Letter</p>
+      <h2 class="vc-title" style="font-style: italic;">Words<br>from<br>the Heart</h2>
+      <div class="vc-rule" style="background: linear-gradient(90deg, var(--color-gold), var(--color-primary));"></div>
+      <p class="vc-lead">Some things can only be said once. This is one of them.</p>
+      <p class="vc-body">Pro: Works beautifully on every screen size. The centered layout has no side constraints. Con: every section feels similar — there's a rhythm, but less variety than Variants A or B.</p>
+    </section>
+
+  </div>
+
+</div><!-- /viewport-wrap -->
+
+<!-- ── Sketch Toolbar ── -->
+<div id="sketch-tools" onmouseenter="this.style.opacity='1'" onmouseleave="this.style.opacity='0.4'">
+  <div>
+    <label>Theme</label>
+    <select onchange="document.querySelector('link[href*=themes]').href='../themes/'+this.value+'.css'">
+      <option value="default">Cinematic Dark</option>
+    </select>
+  </div>
+  <div>
+    <label>Viewport</label>
+    <div class="vp-btns">
+      <button onclick="setVP(375)">📱</button>
+      <button onclick="setVP(768)">💻</button>
+      <button onclick="setVP(null)">🖥</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function showVariant(id, btn) {
+    document.querySelectorAll('.variant').forEach(v => v.style.display = 'none');
+    document.querySelectorAll('.variant-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('variant-' + id).style.display = 'block';
+    btn.classList.add('active');
+  }
+  function setVP(w) {
+    const wrap = document.getElementById('viewport-wrap');
+    wrap.style.maxWidth = w ? w + 'px' : '';
+    wrap.style.border = w ? '2px dashed rgba(192,132,252,0.3)' : '';
+  }
+  document.getElementById('variant-a').style.display = 'block';
+</script>
+</body>
+</html>

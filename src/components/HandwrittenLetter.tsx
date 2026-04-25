@@ -69,13 +69,25 @@ const HandwrittenLetter = () => {
         viewport={{ once: true }}
         transition={{ duration: 1.5 }}
       >
-        {/* Glowing Halo around the letter */}
-        <div className="absolute inset-0 bg-pink-500/10 blur-[100px] rounded-full pointer-events-none" />
+        {/* Glowing Halo — rose + lavender blend */}
+        <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at 50% 50%, rgba(255,180,166,0.12) 0%, rgba(210,188,255,0.06) 50%, transparent 70%)', filter: 'blur(60px)' }} />
 
-        <div className="rounded-[3rem] p-8 md:p-14 relative bg-background/40 backdrop-blur-xl border border-pink-500/20 shadow-[0_0_50px_rgba(255,100,150,0.1)] overflow-hidden">
-          
-          {/* Subtle starry overlay inside the letter */}
-          <div className="absolute inset-0 opacity-20 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, rgba(255,255,255,0.4) 1px, transparent 0)', backgroundSize: '30px 30px' }} />
+        <div className="rounded-[2rem] p-8 md:p-14 relative overflow-hidden" style={{
+          background: 'var(--nc-surface-lo)',
+          border: '1px solid rgba(255,180,166,0.18)',
+          boxShadow: '0 0 60px rgba(255,180,166,0.08), 0 30px 60px rgba(0,0,0,0.4)',
+        }}>
+
+          {/* Paper lined texture */}
+          <div className="absolute inset-0 pointer-events-none opacity-[0.07]" style={{
+            backgroundImage: 'repeating-linear-gradient(to bottom, transparent 0px, transparent 27px, rgba(210,188,255,0.8) 28px)',
+            backgroundSize: '100% 28px',
+          }} />
+
+          {/* Warm parchment tint */}
+          <div className="absolute inset-0 pointer-events-none" style={{
+            background: 'radial-gradient(ellipse at 20% 20%, rgba(233,193,118,0.04) 0%, transparent 60%)',
+          }} />
 
           {/* Letter Content */}
           <div className="relative z-10 space-y-8 min-h-[500px]">

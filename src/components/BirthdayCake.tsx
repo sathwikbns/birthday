@@ -8,10 +8,10 @@ const BirthdayCake = () => {
   const daysLeft = getDaysUntilBirthday();
   const isToday = isBirthdayToday();
 
-  // Show max 10 interactive candles (representing the age visually)
   const totalCandles = Math.min(turningAge, 10);
   const [litCandles, setLitCandles] = useState<boolean[]>(Array(totalCandles).fill(true));
   const allBlown = litCandles.every((c) => !c);
+  const [partyMode, setPartyMode] = useState<"idle" | "dark" | "party">("idle");
 
   const blowCandle = (index: number) => {
     if (!litCandles[index]) return;
@@ -20,19 +20,78 @@ const BirthdayCake = () => {
       next[index] = false;
       const allOut = next.every((c) => !c);
       if (allOut) {
+        // Cinematic: go dark first, then explode into party
+        setPartyMode("dark");
         setTimeout(() => {
-          confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 }, colors: ["#b794f6", "#90cdf4", "#f6ad55", "#fbb6ce"] });
-          setTimeout(() => confetti({ particleCount: 100, spread: 120, origin: { y: 0.5 } }), 300);
-        }, 200);
+          setPartyMode("party");
+          confetti({ particleCount: 200, spread: 100, origin: { y: 0.5 }, colors: ["#d2bcff", "#ffb4a6", "#e9c176", "#ff006e", "#fff"] });
+          setTimeout(() => confetti({ particleCount: 120, angle: 60,  spread: 70, origin: { x: 0 },   colors: ["#e9c176", "#ffb4a6"] }), 350);
+          setTimeout(() => confetti({ particleCount: 120, angle: 120, spread: 70, origin: { x: 1 },   colors: ["#d2bcff", "#ffb4a6"] }), 550);
+          setTimeout(() => confetti({ particleCount: 150, spread: 180, origin: { y: 0.3 }, colors: ["#fff", "#e9c176", "#d2bcff"] }), 900);
+        }, 1500);
       }
       return next;
     });
   };
 
-  const reset = () => setLitCandles(Array(totalCandles).fill(true));
+  const reset = () => { setLitCandles(Array(totalCandles).fill(true)); setPartyMode("idle"); };
 
   return (
-    <section className="section-mixed py-20 px-4">
+    <section
+      className="section-mixed py-20 px-4 relative overflow-hidden transition-all duration-700"
+      style={{
+        background: partyMode === "dark"
+          ? "#000"
+          : partyMode === "party"
+          ? "radial-gradient(circle at 50% 40%, #240046 0%, #10002b 100%)"
+          : undefined,
+        transition: "background 0.8s ease",
+      }}
+    >
+      {/* Cinematic party neon overlay */}
+      {partyMode === "party" && (
+        <motion.div
+          className="absolute inset-0 flex flex-col items-center justify-center z-30 pointer-events-none"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6 }}
+        >
+          <motion.p
+            className="font-display text-center px-6"
+            style={{
+              fontSize: "var(--t-4xl)",
+              background: "linear-gradient(135deg, #e9c176, #d2bcff, #ffb4a6)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
+              textShadow: "none",
+              filter: "drop-shadow(0 0 20px rgba(255,0,110,0.6))",
+            }}
+            animate={{ scale: [0.8, 1.05, 1] }}
+            transition={{ type: "spring", bounce: 0.4 }}
+          >
+            🎉 Make a Wish, {FRIEND_NAME}! 🌟
+          </motion.p>
+          <motion.p
+            className="font-script mt-4"
+            style={{ fontSize: "var(--t-2xl)", color: "#d2bcff", textShadow: "0 0 20px #ff006e, 0 0 40px #e9c176" }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, duration: 0.8 }}
+          >
+            The universe is listening… ✨
+          </motion.p>
+          <motion.button
+            className="mt-8 px-6 py-2 rounded-full font-body font-semibold pointer-events-auto"
+            style={{ background: "rgba(210,188,255,0.15)", border: "1px solid rgba(210,188,255,0.4)", color: "#d2bcff", fontSize: "var(--t-sm)" }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={reset}
+          >
+            🕯️ Relight Candles
+          </motion.button>
+        </motion.div>
+      )}
       <motion.h2
         className="text-4xl md:text-5xl font-display text-center text-lavender mb-2"
         initial={{ opacity: 0, y: 30 }}

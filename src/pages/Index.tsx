@@ -6,6 +6,10 @@ import SparkleCursor from "@/components/SparkleCursor";
 import EasterEggStar from "@/components/EasterEggStar";
 import LoadingScreen from "@/components/LoadingScreen";
 import MagicalEntry from "@/components/MagicalEntry";
+import AuroraBackground from "@/components/AuroraBackground";
+import ShootingStars from "@/components/ShootingStars";
+import ScrollProgressBar from "@/components/ScrollProgressBar";
+import CinematicHero from "@/components/CinematicHero";
 import FriendshipCounter from "@/components/FriendshipCounter";
 import FriendshipTimeline from "@/components/FriendshipTimeline";
 import SecretMessageVault from "@/components/SecretMessageVault";
@@ -19,7 +23,7 @@ import WishTree from "@/components/WishTree";
 import VHSMemories from "@/components/VHSMemories";
 import MessageInABottle from "@/components/MessageInABottle";
 import WishScrapbook from "@/components/WishScrapbook";
-import FriendshipAura from "@/components/FriendshipAura";
+import ScratchCard from "@/components/ScratchCard";
 import FriendshipCertificate from "@/components/FriendshipCertificate";
 import HandwrittenLetter from "@/components/HandwrittenLetter";
 import DarkModeToggle from "@/components/DarkModeToggle";
@@ -28,11 +32,12 @@ import VirtualHug from "@/components/VirtualHug";
 import { FRIEND_NAME } from "@/config/priyanka";
 
 const sections = [
-  { id: "counter", component: <FriendshipCounter /> },
+  { id: "hero",     component: <CinematicHero /> },
+  { id: "counter",  component: <FriendshipCounter /> },
   { id: "cake", component: <BirthdayCake /> },
   { id: "timeline", component: <FriendshipTimeline /> },
   { id: "polaroids", component: <PolaroidRain /> },
-  { id: "aura", component: <FriendshipAura /> },
+  { id: "scratch", component: <ScratchCard /> },
   { id: "game", component: <BirthdayGame /> },
   { id: "galaxy", component: <WhyYouMatterGalaxy /> },
   { id: "vault", component: <SecretMessageVault /> },
@@ -263,6 +268,9 @@ const Index = () => {
 
   return (
     <div className="h-screen w-full overflow-hidden bg-background relative text-foreground [perspective:2000px]">
+      <AuroraBackground />
+      <ShootingStars />
+      <ScrollProgressBar />
       <SparkleCursor />
       <SparkleTrail />
       <EasterEggStar />

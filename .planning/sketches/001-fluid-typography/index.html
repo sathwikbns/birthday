@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sketch 001 — Fluid Typography</title>
+<link rel="stylesheet" href="../themes/default.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-body);
+    padding-top: 56px;
+    min-height: 100vh;
+  }
+
+  /* ── Variant Nav ── */
+  #variant-nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 9998;
+    background: rgba(8,6,16,0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--color-border);
+    padding: 10px 16px;
+    display: flex; gap: 8px; align-items: center;
+    font-family: var(--font-body); font-size: 13px;
+  }
+  .variant-tab {
+    padding: 6px 14px; border-radius: var(--radius-full);
+    border: 1px solid var(--color-border);
+    background: transparent; color: var(--color-text-muted);
+    cursor: pointer; transition: all 0.2s; font-family: var(--font-body); font-size: 12px;
+  }
+  .variant-tab:hover { border-color: var(--color-primary); color: var(--color-primary); }
+  .variant-tab.active {
+    background: var(--color-primary); color: #fff;
+    border-color: var(--color-primary);
+    box-shadow: var(--glow-lavender);
+  }
+  .nav-label { color: var(--color-text-faint); font-size: 11px; margin-right: 8px; text-transform: uppercase; letter-spacing: 0.1em; }
+
+  /* ── Variants ── */
+  .variant { display: none; }
+  .variant.active { display: block; }
+
+  /* ── Shared section styles ── */
+  .demo-section {
+    min-height: 100vh;
+    padding: clamp(40px, 8vw, 100px) clamp(20px, 6vw, 80px);
+    display: flex; flex-direction: column;
+    justify-content: center;
+    background: var(--grad-hero);
+    position: relative; overflow: hidden;
+  }
+  .demo-section::before {
+    content: ''; position: absolute; inset: 0;
+    background: var(--grad-glow); pointer-events: none;
+  }
+  .section-divider {
+    border: none; border-top: 1px solid var(--color-border);
+    margin: 0;
+  }
+
+  /* ── VARIANT A: clamp() fluid ── */
+  .va-eyebrow {
+    font-size: var(--text-sm);
+    font-family: var(--font-body);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    margin-bottom: 16px;
+  }
+  .va-hero-title {
+    font-size: var(--text-hero);
+    font-family: var(--font-display);
+    font-weight: 900;
+    line-height: 1.0;
+    background: var(--grad-text);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 24px;
+  }
+  .va-subtitle {
+    font-size: var(--text-xl);
+    font-family: var(--font-script);
+    color: var(--color-text-muted);
+    max-width: 60ch;
+    line-height: 1.6;
+    margin-bottom: 32px;
+  }
+  .va-body {
+    font-size: var(--text-base);
+    color: var(--color-text-muted);
+    max-width: 55ch;
+    line-height: 1.8;
+  }
+  .va-section-title {
+    font-size: var(--text-4xl);
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 700;
+    color: var(--color-text);
+    margin-bottom: 16px;
+  }
+  .va-caption {
+    font-size: var(--text-xs);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-text-faint);
+  }
+  .pill-badge {
+    display: inline-block;
+    font-size: var(--text-xs);
+    padding: 4px 12px;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--color-primary);
+    color: var(--color-primary);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  /* ── VARIANT B: viewport units ── */
+  .vb-hero-title {
+    font-size: 12vw;
+    font-family: var(--font-display);
+    font-weight: 900;
+    line-height: 1.0;
+    background: var(--grad-text);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 20px;
+  }
+  .vb-subtitle {
+    font-size: 3.5vw;
+    font-family: var(--font-script);
+    color: var(--color-text-muted);
+    max-width: 60ch;
+    line-height: 1.6;
+    margin-bottom: 24px;
+  }
+  .vb-body {
+    font-size: 2vw;
+    color: var(--color-text-muted);
+    max-width: 55ch;
+    line-height: 1.8;
+  }
+  .vb-section-title {
+    font-size: 6vw;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 700;
+    color: var(--color-text);
+    margin-bottom: 12px;
+  }
+  .vb-caption { font-size: 1.2vw; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-text-faint); }
+
+  /* ── VARIANT C: breakpoint steps ── */
+  .vc-hero-title {
+    font-size: 2.5rem;
+    font-family: var(--font-display);
+    font-weight: 900;
+    line-height: 1.0;
+    background: var(--grad-text);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 20px;
+  }
+  .vc-subtitle {
+    font-size: 1rem;
+    font-family: var(--font-script);
+    color: var(--color-text-muted);
+    line-height: 1.6;
+    margin-bottom: 24px;
+  }
+  .vc-body {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    line-height: 1.8;
+  }
+  .vc-section-title {
+    font-size: 1.5rem;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 700;
+    color: var(--color-text);
+    margin-bottom: 12px;
+  }
+  .vc-caption { font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-text-faint); }
+
+  @media (min-width: 768px) {
+    .vc-hero-title { font-size: 4.5rem; }
+    .vc-subtitle   { font-size: 1.3rem; }
+    .vc-body       { font-size: 1rem; }
+    .vc-section-title { font-size: 2.25rem; }
+    .vc-caption    { font-size: 0.75rem; }
+  }
+  @media (min-width: 1280px) {
+    .vc-hero-title { font-size: 6rem; }
+    .vc-subtitle   { font-size: 1.5rem; }
+    .vc-body       { font-size: 1.05rem; }
+    .vc-section-title { font-size: 3rem; }
+    .vc-caption    { font-size: 0.8rem; }
+  }
+
+  /* ── Scale indicator ── */
+  .scale-indicator {
+    position: fixed; top: 64px; right: 16px;
+    background: rgba(192,132,252,0.15);
+    border: 1px solid var(--color-border-glow);
+    border-radius: var(--radius-md);
+    padding: 10px 14px;
+    font-size: 11px;
+    color: var(--color-primary);
+    font-family: monospace;
+    z-index: 9997;
+    line-height: 1.7;
+  }
+
+  /* ── Sketch toolbar ── */
+  #sketch-tools {
+    position: fixed; bottom: 12px; right: 12px; z-index: 9999;
+    font-family: system-ui; font-size: 12px;
+    background: rgba(0,0,0,0.8); color: white;
+    padding: 10px 14px; border-radius: 10px;
+    opacity: 0.4; transition: opacity 0.2s;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  #sketch-tools:hover { opacity: 1; }
+  #sketch-tools label { font-size: 10px; opacity: 0.6; text-transform: uppercase; letter-spacing: 0.1em; }
+  #sketch-tools select, #sketch-tools button {
+    background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+    color: white; border-radius: 4px; padding: 3px 6px; font-size: 11px; cursor: pointer;
+    width: 100%;
+  }
+  .vp-btns { display: flex; gap: 4px; }
+  .vp-btns button { flex: 1; }
+  #viewport-wrap { transition: max-width 0.4s ease; margin: 0 auto; }
+</style>
+</head>
+<body>
+
+<!-- ── Variant Nav ── -->
+<div id="variant-nav">
+  <span class="nav-label">Sketch 001</span>
+  <button class="variant-tab active" onclick="showVariant('a', this)">A: clamp() Fluid ★</button>
+  <button class="variant-tab" onclick="showVariant('b', this)">B: Viewport Units</button>
+  <button class="variant-tab" onclick="showVariant('c', this)">C: Breakpoint Steps</button>
+</div>
+
+<!-- Scale indicator -->
+<div class="scale-indicator" id="scale-indicator">
+  viewport: <span id="vp-width">—</span>px<br>
+  hero: <span id="hero-size">—</span>px<br>
+  body: <span id="body-size">—</span>px
+</div>
+
+<div id="viewport-wrap">
+
+  <!-- ══ VARIANT A: clamp() fluid ══ -->
+  <div id="variant-a" class="variant active">
+
+    <!-- Hero section -->
+    <section class="demo-section">
+      <div class="pill-badge">✦ Happy Birthday</div>
+      <p class="va-eyebrow">For the one who matters most</p>
+      <h1 class="va-hero-title">Happy<br>Birthday<br>Priyanka</h1>
+      <p class="va-subtitle">You are the kind of person the universe writes poems about.</p>
+      <p class="va-body">This is Variant A — clamp() fluid typography. Sizes scale smoothly between a minimum on tiny phones and a maximum on widescreen monitors. Resize your window and watch the text breathe.</p>
+    </section>
+
+    <hr class="section-divider">
+
+    <!-- Inner section -->
+    <section class="demo-section" style="background: linear-gradient(135deg,#0d0a20,#1a0535);">
+      <span class="va-caption">Chapter II · The Timeline</span>
+      <h2 class="va-section-title">Years of laughter,<br>miles of memories</h2>
+      <p class="va-body">Every milestone we've crossed together has shaped who we both are. From the very first hello to every adventure in between — this is our story.</p>
+    </section>
+
+    <hr class="section-divider">
+
+    <!-- Card section -->
+    <section class="demo-section">
+      <span class="va-caption">A message, just for you</span>
+      <h2 class="va-section-title" style="font-family: var(--font-script); font-style: normal;">You make every room brighter.</h2>
+      <p class="va-body">Notice how these words feel right at every screen size — on your phone in bed, on your laptop at the café, on a big monitor with the lights off. That's clamp() in action: type that never feels too squished or too overwhelming.</p>
+    </section>
+  </div>
+
+  <!-- ══ VARIANT B: viewport units ══ -->
+  <div id="variant-b" class="variant">
+    <section class="demo-section">
+      <div class="pill-badge">✦ Happy Birthday</div>
+      <p class="va-eyebrow">For the one who matters most</p>
+      <h1 class="vb-hero-title">Happy<br>Birthday<br>Priyanka</h1>
+      <p class="vb-subtitle">You are the kind of person the universe writes poems about.</p>
+      <p class="vb-body">This is Variant B — viewport unit typography (vw). Sizes are purely proportional to window width. On a huge screen, perfect. On a tiny phone, text can get dangerously small. Try resizing.</p>
+    </section>
+
+    <hr class="section-divider">
+
+    <section class="demo-section" style="background: linear-gradient(135deg,#0d0a20,#1a0535);">
+      <span class="vb-caption">Chapter II · The Timeline</span>
+      <h2 class="vb-section-title">Years of laughter,<br>miles of memories</h2>
+      <p class="vb-body">Watch what happens on a phone vs desktop. On a tiny screen, the body text might become unreadably small. On an ultra-wide monitor it could be comically large.</p>
+    </section>
+
+    <hr class="section-divider">
+
+    <section class="demo-section">
+      <span class="vb-caption">A message, just for you</span>
+      <h2 class="vb-section-title" style="font-family: var(--font-script); font-style: normal;">You make every room brighter.</h2>
+      <p class="vb-body">Problem: viewport units have no safety net. There's no minimum size floor. A 320px-wide phone would show ~38px hero text (fine) but ~6px body text (broken). This is the current bug.</p>
+    </section>
+  </div>
+
+  <!-- ══ VARIANT C: breakpoint steps ══ -->
+  <div id="variant-c" class="variant">
+    <section class="demo-section">
+      <div class="pill-badge">✦ Happy Birthday</div>
+      <p class="va-eyebrow">For the one who matters most</p>
+      <h1 class="vc-hero-title">Happy<br>Birthday<br>Priyanka</h1>
+      <p class="vc-subtitle">You are the kind of person the universe writes poems about.</p>
+      <p class="vc-body">This is Variant C — discrete breakpoint steps. Three fixed sizes: one for mobile, one for tablet, one for desktop. No smooth scaling between them — you get a "jump" at each breakpoint.</p>
+    </section>
+
+    <hr class="section-divider">
+
+    <section class="demo-section" style="background: linear-gradient(135deg,#0d0a20,#1a0535);">
+      <span class="vc-caption">Chapter II · The Timeline</span>
+      <h2 class="vc-section-title">Years of laughter,<br>miles of memories</h2>
+      <p class="vc-body">Drawback: if you're at exactly 769px (just past the tablet breakpoint), you might get sizes meant for desktop. The transition feels abrupt rather than graceful. But it's predictable.</p>
+    </section>
+
+    <hr class="section-divider">
+
+    <section class="demo-section">
+      <span class="vc-caption">A message, just for you</span>
+      <h2 class="vc-section-title" style="font-family: var(--font-script); font-style: normal;">You make every room brighter.</h2>
+      <p class="vc-body">Resize your window slowly. At 768px and 1280px you'll feel the jump. Compare with Variant A (clamp) which transitions silently without a visible snap.</p>
+    </section>
+  </div>
+
+</div><!-- /viewport-wrap -->
+
+<!-- ── Sketch Toolbar ── -->
+<div id="sketch-tools" onmouseenter="this.style.opacity='1'" onmouseleave="this.style.opacity='0.4'">
+  <div>
+    <label>Theme</label>
+    <select onchange="document.querySelector('link[href*=themes]').href='../themes/'+this.value+'.css'">
+      <option value="default">Cinematic Dark</option>
+    </select>
+  </div>
+  <div>
+    <label>Viewport Preview</label>
+    <div class="vp-btns">
+      <button onclick="setVP(375)">📱</button>
+      <button onclick="setVP(768)">💻</button>
+      <button onclick="setVP(null)">🖥</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function showVariant(id, btn) {
+    document.querySelectorAll('.variant').forEach(v => v.style.display = 'none');
+    document.querySelectorAll('.variant-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('variant-' + id).style.display = 'block';
+    btn.classList.add('active');
+  }
+
+  function setVP(w) {
+    const wrap = document.getElementById('viewport-wrap');
+    wrap.style.maxWidth = w ? w + 'px' : '';
+    wrap.style.border = w ? '2px dashed rgba(192,132,252,0.3)' : '';
+  }
+
+  // ── Live scale indicator ──
+  function updateIndicator() {
+    const vw = window.innerWidth;
+    document.getElementById('vp-width').textContent = vw;
+
+    // Sample computed font sizes from active variant
+    const activeA = document.querySelector('#variant-a.active .va-hero-title');
+    const activeB = document.querySelector('#variant-b.active .vb-hero-title');
+    const activeC = document.querySelector('#variant-c.active .vc-hero-title');
+    const hero = activeA || activeB || activeC;
+    const body = document.querySelector('.va-body, .vb-body, .vc-body');
+
+    if (hero) {
+      const heroFs = parseFloat(getComputedStyle(hero).fontSize);
+      document.getElementById('hero-size').textContent = Math.round(heroFs);
+    }
+    if (body) {
+      const bodyFs = parseFloat(getComputedStyle(body).fontSize);
+      document.getElementById('body-size').textContent = Math.round(bodyFs);
+    }
+  }
+
+  window.addEventListener('resize', updateIndicator);
+  setTimeout(updateIndicator, 100);
+
+  // Init
+  document.getElementById('variant-a').style.display = 'block';
+</script>
+</body>
+</html>

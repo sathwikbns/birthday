@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sketch 003 — Navigation Redesign</title>
+<link rel="stylesheet" href="../themes/default.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-body);
+    padding-top: 56px;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── Variant Nav ── */
+  #variant-nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 9998;
+    background: rgba(8,6,16,0.95); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--color-border);
+    padding: 10px 16px; display: flex; gap: 8px; align-items: center;
+    font-family: var(--font-body); font-size: 13px;
+  }
+  .variant-tab {
+    padding: 6px 14px; border-radius: var(--radius-full);
+    border: 1px solid var(--color-border);
+    background: transparent; color: var(--color-text-muted);
+    cursor: pointer; transition: all 0.2s; font-family: var(--font-body); font-size: 12px;
+  }
+  .variant-tab:hover { border-color: var(--color-primary); color: var(--color-primary); }
+  .variant-tab.active {
+    background: var(--color-primary); color: #fff;
+    border-color: var(--color-primary); box-shadow: var(--glow-lavender);
+  }
+  .nav-label { color: var(--color-text-faint); font-size: 11px; margin-right: 8px; text-transform: uppercase; letter-spacing: 0.1em; }
+  .variant { display: none; }
+  .variant.active { display: block; }
+
+  /* ── Shared fake page ── */
+  .fake-page {
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center;
+    padding: clamp(40px, 8vw, 100px) clamp(20px, 6vw, 80px) 120px;
+    background: var(--grad-hero);
+    position: relative; overflow: hidden;
+    transition: all 0.5s var(--ease-smooth);
+  }
+  .fake-page::before {
+    content: ''; position: absolute; inset: 0;
+    background: var(--grad-glow); pointer-events: none;
+  }
+  .fake-page.page-2 { background: linear-gradient(160deg, #0a1020 0%, #102830 60%, #080a16 100%); }
+  .fake-page.page-3 { background: linear-gradient(160deg, #150820 0%, #220a30 60%, #0a0516 100%); }
+  .page-label {
+    font-size: clamp(0.6rem, 1.5vw, 0.7rem);
+    letter-spacing: 0.4em; text-transform: uppercase;
+    color: var(--color-text-faint); margin-bottom: 16px;
+  }
+  .page-title {
+    font-size: clamp(2rem, 7vw, 5.5rem);
+    font-family: var(--font-display); font-weight: 900; font-style: italic;
+    background: var(--grad-text);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    line-height: 1.0; margin-bottom: 24px;
+  }
+  .page-body {
+    font-size: clamp(0.875rem, 2vw, 1rem);
+    color: var(--color-text-muted); max-width: 45ch; line-height: 1.8;
+  }
+
+
+  /* ════════════════════════════════════════
+     VARIANT A — Film Strip Progress Dots
+  ════════════════════════════════════════ */
+  .va-nav {
+    position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%);
+    z-index: 9990;
+    display: flex; align-items: center; gap: 0;
+    background: rgba(10,8,20,0.85);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+    padding: 8px 12px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  }
+  .va-nav-btn {
+    width: 36px; height: 36px; border-radius: 50%;
+    border: 1px solid var(--color-border);
+    background: transparent; color: var(--color-text-muted);
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    font-size: 14px; transition: all 0.2s;
+    flex-shrink: 0;
+  }
+  .va-nav-btn:hover:not(:disabled) { background: rgba(192,132,252,0.15); border-color: var(--color-primary); color: var(--color-primary); }
+  .va-nav-btn:disabled { opacity: 0.25; cursor: not-allowed; }
+  .va-dots {
+    display: flex; align-items: center; gap: 6px; padding: 0 16px;
+  }
+  .va-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: rgba(240,236,255,0.2);
+    cursor: pointer; transition: all 0.3s var(--ease-bounce);
+  }
+  .va-dot.active {
+    width: 24px; border-radius: 3px;
+    background: var(--color-primary);
+    box-shadow: 0 0 10px rgba(192,132,252,0.6);
+  }
+  .va-dot:hover:not(.active) { background: rgba(192,132,252,0.4); transform: scale(1.2); }
+  .va-counter {
+    font-size: 11px; color: var(--color-text-faint);
+    letter-spacing: 0.15em; margin-left: 4px;
+    font-family: var(--font-body);
+  }
+
+
+  /* ════════════════════════════════════════
+     VARIANT B — Floating Pill Prev/Next
+  ════════════════════════════════════════ */
+  .vb-nav {
+    position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%);
+    z-index: 9990;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .vb-nav-pill {
+    display: flex; align-items: center; gap: 10px;
+    background: rgba(10,8,20,0.85); backdrop-filter: blur(16px);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+    padding: 10px 20px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  }
+  .vb-prev, .vb-next {
+    display: flex; align-items: center; gap: 8px;
+    background: transparent; border: none; cursor: pointer;
+    color: var(--color-text-muted);
+    font-family: var(--font-body);
+    font-size: clamp(12px, 2vw, 13px);
+    letter-spacing: 0.05em;
+    padding: 6px 10px; border-radius: var(--radius-full);
+    transition: all 0.2s;
+  }
+  .vb-prev:hover:not(:disabled), .vb-next:hover:not(:disabled) {
+    color: var(--color-text); background: rgba(192,132,252,0.1);
+  }
+  .vb-prev:disabled, .vb-next:disabled { opacity: 0.25; cursor: not-allowed; }
+  .vb-divider { width: 1px; height: 24px; background: var(--color-border); }
+  .vb-info {
+    text-align: center; padding: 0 4px;
+  }
+  .vb-section-name {
+    font-size: clamp(11px, 2vw, 12px);
+    color: var(--color-primary); font-family: var(--font-body);
+    letter-spacing: 0.1em; display: block;
+  }
+  .vb-progress-bar {
+    width: 80px; height: 2px; background: rgba(255,255,255,0.1);
+    border-radius: 1px; margin-top: 4px; overflow: hidden;
+  }
+  .vb-progress-fill {
+    height: 100%; background: var(--color-primary);
+    border-radius: 1px; transition: width 0.4s var(--ease-smooth);
+  }
+  /* Floating HUG button */
+  .vb-hug-btn {
+    width: 48px; height: 48px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--color-rose), var(--color-primary));
+    border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    box-shadow: var(--glow-rose);
+    transition: all 0.2s var(--ease-bounce);
+  }
+  .vb-hug-btn:hover { transform: scale(1.15); }
+  .vb-hug-btn:active { transform: scale(0.95); }
+
+
+  /* ════════════════════════════════════════
+     VARIANT C — Gesture Edge Hints + Corner Nav
+  ════════════════════════════════════════ */
+  .vc-edge-left, .vc-edge-right {
+    position: fixed; top: 50%; transform: translateY(-50%);
+    z-index: 9990;
+    display: flex; align-items: center; justify-content: center;
+    width: 48px; height: 80px;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .vc-edge-left { left: 0; }
+  .vc-edge-right { right: 0; }
+  .vc-edge-inner {
+    width: 36px; height: 64px; border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+    background: rgba(192,132,252,0.1);
+    border: 1px solid rgba(192,132,252,0.2);
+    border-left: none;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s; font-size: 14px; color: var(--color-text-muted);
+    backdrop-filter: blur(8px);
+  }
+  .vc-edge-right .vc-edge-inner {
+    border-radius: var(--radius-lg) 0 0 var(--radius-lg);
+    border: 1px solid rgba(192,132,252,0.2); border-right: none;
+  }
+  .vc-edge-left:hover .vc-edge-inner { background: rgba(192,132,252,0.2); color: var(--color-primary); }
+  .vc-edge-right:hover .vc-edge-inner { background: rgba(192,132,252,0.2); color: var(--color-primary); }
+  .vc-edge-left:where([data-disabled]) .vc-edge-inner { opacity: 0.2; cursor: not-allowed; }
+
+  /* Corner status indicator */
+  .vc-corner {
+    position: fixed; bottom: 24px; right: 24px; z-index: 9990;
+    text-align: right;
+  }
+  .vc-corner-page {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-family: var(--font-display); font-weight: 900;
+    color: rgba(192,132,252,0.15); line-height: 1;
+    display: block;
+  }
+  .vc-corner-label {
+    font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--color-text-faint); display: block;
+  }
+
+  /* Swipe hint pulse */
+  .swipe-hint {
+    position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%);
+    z-index: 9989;
+    display: flex; align-items: center; gap: 8px;
+    font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase;
+    color: var(--color-text-faint); opacity: 0.5;
+    animation: hint-pulse 3s ease-in-out infinite;
+  }
+  @keyframes hint-pulse {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.7; }
+  }
+
+
+  /* ── Sketch Toolbar ── */
+  #sketch-tools {
+    position: fixed; bottom: 12px; right: 12px; z-index: 9999;
+    font-family: system-ui; font-size: 12px;
+    background: rgba(0,0,0,0.8); color: white;
+    padding: 10px 14px; border-radius: 10px;
+    opacity: 0.4; transition: opacity 0.2s;
+    display: flex; flex-direction: column; gap: 8px;
+    min-width: 140px;
+  }
+  #sketch-tools:hover { opacity: 1; }
+  #sketch-tools label { font-size: 10px; opacity: 0.6; text-transform: uppercase; letter-spacing: 0.1em; }
+  #sketch-tools select, #sketch-tools button {
+    background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+    color: white; border-radius: 4px; padding: 3px 6px; font-size: 11px; cursor: pointer; width: 100%;
+  }
+  .vp-btns { display: flex; gap: 4px; }
+  .vp-btns button { flex: 1; }
+  #viewport-wrap { transition: max-width 0.4s; margin: 0 auto; }
+
+  /* Shared toast */
+  .toast {
+    position: fixed; top: 70px; left: 50%; transform: translateX(-50%);
+    background: rgba(192,132,252,0.2); border: 1px solid var(--color-border-glow);
+    backdrop-filter: blur(12px); border-radius: var(--radius-full);
+    padding: 8px 20px; font-size: 12px; color: var(--color-primary);
+    letter-spacing: 0.1em; z-index: 10000;
+    opacity: 0; transition: opacity 0.3s; pointer-events: none;
+  }
+  .toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<!-- ── Variant Nav ── -->
+<div id="variant-nav">
+  <span class="nav-label">Sketch 003</span>
+  <button class="variant-tab active" onclick="switchVariant('a', this)">A: Film Strip Dots</button>
+  <button class="variant-tab" onclick="switchVariant('b', this)">B: Floating Pill</button>
+  <button class="variant-tab" onclick="switchVariant('c', this)">C: Edge Gestures</button>
+</div>
+
+<!-- Toast notification -->
+<div class="toast" id="toast"></div>
+
+<div id="viewport-wrap">
+
+  <!-- ══ VARIANT A: Film Strip Dots ══ -->
+  <div id="variant-a" class="variant active">
+    <!-- Pages -->
+    <div class="fake-page" id="va-page-1">
+      <p class="page-label">001 · The Entrance</p>
+      <h1 class="page-title">Put Your<br>Headphones On</h1>
+      <p class="page-body">Variant A uses expanding pill dots — like a film strip. The active dot stretches from a circle to a lozenge. Hit the arrows or tap a dot to navigate. Very tactile on mobile.</p>
+    </div>
+    <div class="fake-page page-2" id="va-page-2" style="display:none;">
+      <p class="page-label">002 · The Cake</p>
+      <h1 class="page-title">Make a<br>Birthday Wish</h1>
+      <p class="page-body">Notice the pill-dot below stretching to mark the current section. The counter on the right shows "2 / 6" so you always know where you are in the journey.</p>
+    </div>
+    <div class="fake-page page-3" id="va-page-3" style="display:none;">
+      <p class="page-label">003 · The Timeline</p>
+      <h1 class="page-title">Years of<br>Memories</h1>
+      <p class="page-body">The arrows are small and unobtrusive. On mobile they become full-width invisible tap zones on left and right halves of the screen — no thumb has to stretch.</p>
+    </div>
+    <div class="fake-page" id="va-page-4" style="display:none;" style="background: linear-gradient(160deg, #100525 0%, #1e0838 100%);">
+      <p class="page-label">004 · The Galaxy</p>
+      <h1 class="page-title">Why You<br>Matter</h1>
+      <p class="page-body">As you approach the last section, a confetti burst fires and the final dot glows gold instead of lavender — signaling the emotional finale is near.</p>
+    </div>
+    <div class="fake-page page-2" id="va-page-5" style="display:none;">
+      <p class="page-label">005 · The Vault</p>
+      <h1 class="page-title">Secret<br>Messages</h1>
+      <p class="page-body">Fifth of six sections. The film strip always shows all dots so you see the full journey at once. Active dot glows. Visited dots are slightly brighter than future ones.</p>
+    </div>
+    <div class="fake-page page-3" id="va-page-6" style="display:none;">
+      <p class="page-label">006 · The Letter</p>
+      <h1 class="page-title">Words from<br>the Heart</h1>
+      <p class="page-body">You made it. 🎉 The final dot turns gold and pulses. The arrows disappear. A floating "Made with love" footer rises up. The navigation celebrates the journey's end.</p>
+    </div>
+
+    <!-- ── VARIANT A NAV ── -->
+    <div class="va-nav" id="va-nav">
+      <button class="va-nav-btn" id="va-prev" onclick="vaGo(-1)" disabled>←</button>
+      <div class="va-dots" id="va-dots">
+        <div class="va-dot active" onclick="vaGoTo(0)"></div>
+        <div class="va-dot" onclick="vaGoTo(1)"></div>
+        <div class="va-dot" onclick="vaGoTo(2)"></div>
+        <div class="va-dot" onclick="vaGoTo(3)"></div>
+        <div class="va-dot" onclick="vaGoTo(4)"></div>
+        <div class="va-dot" onclick="vaGoTo(5)"></div>
+      </div>
+      <button class="va-nav-btn" id="va-next" onclick="vaGo(1)">→</button>
+      <span class="va-counter" id="va-counter">1 / 6</span>
+    </div>
+  </div>
+
+
+  <!-- ══ VARIANT B: Floating Pill ══ -->
+  <div id="variant-b" class="variant">
+    <div class="fake-page" id="vb-page-1">
+      <p class="page-label">001 · The Entrance</p>
+      <h1 class="page-title">Put Your<br>Headphones On</h1>
+      <p class="page-body">Variant B uses a floating pill with the current section name and a progress bar. Left/right buttons have text labels — "Prev" and "Next" with arrows — making them very readable on any size screen.</p>
+    </div>
+    <div class="fake-page page-2" id="vb-page-2" style="display:none;">
+      <p class="page-label">002 · The Cake</p>
+      <h1 class="page-title">Make a<br>Birthday Wish</h1>
+      <p class="page-body">The thin progress bar under the section name fills as you advance. The bright pink circle button on the right triggers a Virtual Hug — always accessible, never in the way.</p>
+    </div>
+    <div class="fake-page page-3" id="vb-page-3" style="display:none;">
+      <p class="page-label">003 · The Timeline</p>
+      <h1 class="page-title">Years of<br>Memories</h1>
+      <p class="page-body">The pill adapts natively to all screen sizes. On a tiny 320px phone, the text labels collapse to just arrows. The progress bar always shows. Clean and touch-friendly.</p>
+    </div>
+
+    <!-- ── VARIANT B NAV ── -->
+    <div class="vb-nav" id="vb-nav">
+      <div class="vb-nav-pill">
+        <button class="vb-prev" id="vb-prev" onclick="vbGo(-1)" disabled>← Prev</button>
+        <div class="vb-divider"></div>
+        <div class="vb-info">
+          <span class="vb-section-name" id="vb-section-name">The Entrance</span>
+          <div class="vb-progress-bar">
+            <div class="vb-progress-fill" id="vb-progress" style="width: 16.67%"></div>
+          </div>
+        </div>
+        <div class="vb-divider"></div>
+        <button class="vb-next" id="vb-next" onclick="vbGo(1)">Next →</button>
+      </div>
+      <button class="vb-hug-btn" onclick="showToast('💜 Virtual hug sent!')" title="Send a hug">🤗</button>
+    </div>
+  </div>
+
+
+  <!-- ══ VARIANT C: Edge Gestures ══ -->
+  <div id="variant-c" class="variant">
+    <div class="fake-page" id="vc-page-1">
+      <p class="page-label">001 · The Entrance</p>
+      <h1 class="page-title">Put Your<br>Headphones On</h1>
+      <p class="page-body">Variant C makes navigation almost invisible — two translucent edge panels on left and right, like the 3DS' shoulder buttons. Tap the right edge to go forward. The page number renders huge and ghosted in the corner. Totally cinematic.</p>
+    </div>
+    <div class="fake-page page-2" id="vc-page-2" style="display:none;">
+      <p class="page-label">002 · The Cake</p>
+      <h1 class="page-title">Make a<br>Birthday Wish</h1>
+      <p class="page-body">The big ghost number in the bottom-right is decorative progress. It reads "2" in enormous, faint type. The next section title whispers as a subtitle. Like a film reel counting down frames.</p>
+    </div>
+    <div class="fake-page page-3" id="vc-page-3" style="display:none;">
+      <p class="page-label">003 · The Timeline</p>
+      <h1 class="page-title">Years of<br>Memories</h1>
+      <p class="page-body">Trade-off: It's very beautiful but not immediately obvious how to navigate. The swipe hint at the bottom pulsing "← Swipe →" ensures discoverability. After the first interaction it auto-hides.</p>
+    </div>
+
+    <!-- ── VARIANT C NAV ── -->
+    <div class="vc-edge-left" id="vc-edge-left" onclick="vcGo(-1)" data-disabled>
+      <div class="vc-edge-inner">←</div>
+    </div>
+    <div class="vc-edge-right" onclick="vcGo(1)">
+      <div class="vc-edge-inner">→</div>
+    </div>
+    <div class="vc-corner">
+      <span class="vc-corner-page" id="vc-corner-num">1</span>
+      <span class="vc-corner-label">of 3</span>
+    </div>
+    <div class="swipe-hint" id="vc-swipe-hint">← swipe to navigate →</div>
+  </div>
+
+</div><!-- /viewport-wrap -->
+
+<!-- ── Sketch Toolbar ── -->
+<div id="sketch-tools" onmouseenter="this.style.opacity='1'" onmouseleave="this.style.opacity='0.4'">
+  <div>
+    <label>Theme</label>
+    <select onchange="document.querySelector('link[href*=themes]').href='../themes/'+this.value+'.css'">
+      <option value="default">Cinematic Dark</option>
+    </select>
+  </div>
+  <div>
+    <label>Viewport</label>
+    <div class="vp-btns">
+      <button onclick="setVP(375)">📱</button>
+      <button onclick="setVP(768)">💻</button>
+      <button onclick="setVP(null)">🖥</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  /* ── Variant switching ── */
+  function switchVariant(id, btn) {
+    document.querySelectorAll('.variant').forEach(v => v.style.display = 'none');
+    document.querySelectorAll('.variant-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('variant-' + id).style.display = 'block';
+    btn.classList.add('active');
+  }
+
+  /* ── Toast ── */
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2000);
+  }
+
+  /* ── Viewport Preview ── */
+  function setVP(w) {
+    const wrap = document.getElementById('viewport-wrap');
+    wrap.style.maxWidth = w ? w + 'px' : '';
+    wrap.style.border = w ? '2px dashed rgba(192,132,252,0.3)' : '';
+  }
+
+  /* ── VARIANT A: Film Strip Dots ── */
+  const vaSections = ['va-page-1','va-page-2','va-page-3','va-page-4','va-page-5','va-page-6'];
+  let vaCurrent = 0;
+
+  function vaGo(dir) {
+    const next = vaCurrent + dir;
+    if (next < 0 || next >= vaSections.length) return;
+    vaGoTo(next);
+  }
+  function vaGoTo(idx) {
+    document.getElementById(vaSections[vaCurrent]).style.display = 'none';
+    vaCurrent = idx;
+    document.getElementById(vaSections[vaCurrent]).style.display = 'flex';
+    document.getElementById('va-prev').disabled = vaCurrent === 0;
+    document.getElementById('va-next').disabled = vaCurrent === vaSections.length - 1;
+    document.getElementById('va-counter').textContent = (vaCurrent + 1) + ' / ' + vaSections.length;
+    document.querySelectorAll('.va-dot').forEach((d, i) => {
+      d.classList.toggle('active', i === vaCurrent);
+      if (i === vaSections.length - 1 && vaCurrent === vaSections.length - 1) {
+        d.style.background = 'var(--color-gold)';
+        d.style.boxShadow = 'var(--glow-gold)';
+      } else {
+        d.style.background = '';
+        d.style.boxShadow = '';
+      }
+    });
+    if (vaCurrent === vaSections.length - 1) showToast('🎉 You reached the end!');
+  }
+
+  /* ── VARIANT B: Floating Pill ── */
+  const vbSections = ['vb-page-1','vb-page-2','vb-page-3'];
+  const vbNames = ['The Entrance','The Cake','The Timeline'];
+  let vbCurrent = 0;
+
+  function vbGo(dir) {
+    const next = vbCurrent + dir;
+    if (next < 0 || next >= vbSections.length) return;
+    document.getElementById(vbSections[vbCurrent]).style.display = 'none';
+    vbCurrent = next;
+    document.getElementById(vbSections[vbCurrent]).style.display = 'flex';
+    document.getElementById('vb-prev').disabled = vbCurrent === 0;
+    document.getElementById('vb-next').disabled = vbCurrent === vbSections.length - 1;
+    document.getElementById('vb-section-name').textContent = vbNames[vbCurrent];
+    document.getElementById('vb-progress').style.width = ((vbCurrent + 1) / vbSections.length * 100) + '%';
+  }
+
+  /* ── VARIANT C: Edge Gestures ── */
+  const vcSections = ['vc-page-1','vc-page-2','vc-page-3'];
+  let vcCurrent = 0;
+  let vcHinted = false;
+
+  function vcGo(dir) {
+    const next = vcCurrent + dir;
+    if (next < 0 || next >= vcSections.length) return;
+    document.getElementById(vcSections[vcCurrent]).style.display = 'none';
+    vcCurrent = next;
+    document.getElementById(vcSections[vcCurrent]).style.display = 'flex';
+    document.getElementById('vc-corner-num').textContent = vcCurrent + 1;
+    const left = document.getElementById('vc-edge-left');
+    if (vcCurrent === 0) left.setAttribute('data-disabled','');
+    else left.removeAttribute('data-disabled');
+    if (!vcHinted) {
+      document.getElementById('vc-swipe-hint').style.display = 'none';
+      vcHinted = true;
+    }
+  }
+
+  /* Init: show first variant */
+  document.getElementById('variant-a').style.display = 'block';
+</script>
+</body>
+</html>

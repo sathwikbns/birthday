@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="title" content="Happy Birthday Special | Mr Rahul Developer">
+    <title>Happy Birthday Special</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Titan+One&family=Poppins:wght@500;700&family=Caveat:wght@700&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- jQuery & Confetti JS -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+    <!-- Background Music -->
+    <audio id="bday-audio" loop autoplay>
+        <source src="music.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Floating Love Notes -->
+    <div class="bg-bubbles">
+        <div class="bubble love-note" data-msg="You are my sunshine! ☀️"><i class="fa-solid fa-heart"></i></div>
+        <div class="bubble love-note" data-msg="Your smile is my favorite! 😍"><i class="fa-solid fa-star"></i></div>
+        <div class="bubble love-note" data-msg="I love you to the moon & back! 🌙"><i class="fa-solid fa-heart"></i></div>
+        <div class="bubble love-note" data-msg="You make my heart skip a beat! 💓"><i class="fa-solid fa-star"></i></div>
+    </div>
+
+    <!-- Note Popup Toast -->
+    <div id="toast-note" class="toast">Message</div>
+
+    <div id="wrapper">
+        <div class="flag__birthday">
+            <img src="./images/1.png" alt="" class="flag__left">
+            <img src="./images/1.png" alt="" class="flag__right">
+        </div>
+        
+        <div class="content">
+            <!-- Left Side -->
+            <div class="left">
+                <div class="title">
+                    <div class="happy text-row">
+                        <span style="--t: 0.1s;">H</span><span style="--t: 0.2s;">a</span><span style="--t: 0.3s;">p</span><span style="--t: 0.4s;">p</span><span style="--t: 0.5s;">y</span>
+                    </div>
+                    <div class="birthday text-row">
+                        <span style="--t: 0.6s;">B</span><span style="--t: 0.7s;">i</span><span style="--t: 0.8s;">r</span><span style="--t: 0.9s;">t</span><span style="--t: 1.0s;">h</span><span style="--t: 1.1s;">d</span><span style="--t: 1.2s;">a</span><span style="--t: 1.3s;">y</span>
+                    </div>
+                    <div class="hat">
+                        <img src="./images/hat.png" alt="">
+                    </div>
+                </div>
+                
+                <div class="date__of__birth pop-in-date">
+                    <span></span>
+                </div>
+                
+                <div class="btn pop-in-btn">
+                    <button id="btn__letter" class="shimmer-btn">
+                        <span>Click here Aradhya</span>
+                        <i class="fa-solid fa-envelope-open-heart"></i>
+                    </button>
+                </div>
+
+                <!-- Cake and Scratch Card Buttons -->
+                <div class="extra-actions pop-in-btn">
+                    <button id="btn__cake" class="icon-btn" title="Blow the Candle"><i class="fa-solid fa-cake-candles"></i></button>
+                    <button id="btn__scratch" class="icon-btn" title="Surprise Gift"><i class="fa-solid fa-gift"></i></button>
+                </div>
+            </div>
+
+            <!-- Right Side -->
+            <div class="right">
+                <div class="box__account slide-up-bottom">
+                    <div class="image float-anim">
+                        <!-- Add Your Fav Person Image Here -->
+                        <img src="./images/r5.png" alt="Birthday Person">
+                    </div>
+                    <div class="name">
+                        <i class="fa-solid fa-heart beat"></i>
+                        <span>Aradhya</span>
+                        <i class="fa-solid fa-heart beat"></i>
+                    </div>
+                    
+                    <div class="balloon_one swing-right">
+                        <img src="./images/balloon1.png" alt="">
+                    </div>
+                    <div class="balloon_two swing-left">
+                        <img src="./images/balloon2.png" alt="">
+                    </div>
+                </div>
+                
+                <div class="cricle scale-in">
+                    <div class="text__cricle">
+                        <span style="--i: 1;">h</span><span style="--i: 2;">a</span><span style="--i: 3;">p</span><span style="--i: 4;">p</span><span style="--i: 5;">y</span><span style="--i: 6;">-</span>
+                        <span style="--i: 7;">b</span><span style="--i: 8;">i</span><span style="--i: 9;">r</span><span style="--i: 10;">t</span><span style="--i: 11;">h</span><span style="--i: 12;">d</span><span style="--i: 13;">a</span><span style="--i: 14;">y</span><span style="--i: 15;">-</span>
+                    </div>
+                    <i class="fa-solid fa-heart center-heart"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Secret Letter Box -->
+        <div class="box__letter modal-box">
+            <div class="letter__border">
+                <div class="close"><i class="fa-solid fa-xmark"></i></div>
+                <div class="letter">
+                    <div class="title__letter"></div>
+                    <div class="content__letter">
+                        <div class="left">
+                            <img id="heart__letter" src="https://media.giphy.com/media/YKUvclrGYmDKXwtphf/giphy.gif" alt="">
+                            <img class="heart heart_1" style="--t: 0.2s" width="20" src="./images/heart.png" alt="">
+                            <img class="heart heart_2" style="--t: 0.4s" width="20" src="./images/heart.png" alt="">
+                            <img class="heart heart_3" style="--t: 0.6s" width="20" src="./images/heart.png" alt="">
+                            <img class="heart heart_4" style="--t: 0.8s" width="20" src="./images/heart.png" alt="">
+                        </div>
+                        <div class="right">
+                            <div class="love__img">
+                                <img src="https://media.giphy.com/media/m85llaN7ZkFIHtURiC/giphy.gif" alt="" width="150">
+                            </div>
+                            <div class="text__letter">
+                                 <p></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3D Cake Modal -->
+        <div id="cake-modal" class="modal-box">
+            <div class="letter__border cake-card">
+                <div class="close btn-close-cake"><i class="fa-solid fa-xmark"></i></div>
+                <h2 class="title__letter cake-title">Make a Wish! 🎂</h2>
+                
+                <!-- Realistic 3D CSS Cake -->
+                <div class="cake-container">
+                    <div class="cake-3d">
+                        <div class="cake-side"></div>
+                        <div class="cake-top">
+                            <div class="frosting"></div>
+                            <div class="candle" id="candle">
+                                <div class="flame" id="flame"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="instruction">Tap the flame to blow it out!</p>
+                <p class="wish-text hidden">May all your wishes come true! ✨</p>
+            </div>
+        </div>
+
+        <!-- Advanced Scratch Card Modal -->
+        <div id="scratch-modal" class="modal-box">
+            <div class="letter__border scratch-card-box">
+                <div class="close btn-close-scratch"><i class="fa-solid fa-xmark"></i></div>
+                <h2 class="title__letter">Your Surprise 🎁</h2>
+                
+                <div class="scratch-container" id="scratch-container">
+                    <div class="scratch-secret">
+                        <!-- Custom Gift Message -->
+                        <h3>️My Love 💕</h3>
+                        <p>I coded this page only for you. Love you so much!</p>
+                    </div>
+                    <canvas id="scratch-canvas"></canvas>
+                </div>
+                <p class="instruction mt-3 scratch-instruction">Scratch the gold foil to reveal!</p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Modified Developer Credit -->
+    <div id="copy">
+        <p>Developed with ❤️ by <a href="#">@Mr.Rahul.Developer</a></p>
+    </div>
+
+<script>
+    /* ==================================
+       MAIN SETUP & TEXTS
+       ================================== */
+    let datetxt = "25th April"; 
+    let datatxtletter = "My love, You are a very special girl. I silently thank universe for bringing you into my life. I wish you endless joy, peace, and health. Let's celebrate many more together! Happy birthday! 💖✨";
+    let titleLetter = "For My Special One";
+    
+    let charArrDate = datetxt.split('');
+    let charArrDateLetter = datatxtletter.split('');
+    let charArrTitle = titleLetter.split('');
+    let currentIndex = 0, currentIndexLetter = 0, currentIndexTitle = 0;
+    let date__of__birth = document.querySelector(".date__of__birth span");
+    let text__letter = document.querySelector(".text__letter p");
+    let intervalContent, intervalTitle;
+
+    /* ==================================
+       AUTO-PLAY MUSIC LOGIC
+       ================================== */
+    window.addEventListener('click', function() {
+        let music = document.getElementById("bday-audio");
+        if(music.paused) music.play().catch(e => console.log("Autoplay prevented"));
+    }, { once: true });
+    window.addEventListener('touchstart', function() {
+        let music = document.getElementById("bday-audio");
+        if(music.paused) music.play();
+    }, { once: true });
+
+    /* ==================================
+       STAGGERED TYPING ANIMATION
+       ================================== */
+    setTimeout(function(){
+        let timeDatetxt = setInterval(function(){
+            if(currentIndex < charArrDate.length){
+                date__of__birth.textContent += charArrDate[currentIndex];
+                currentIndex++;
+            } else {
+                clearInterval(timeDatetxt);
+            }
+        }, 100);
+    }, 3800);
+
+    /* ==================================
+       MAIN LETTER LOGIC
+       ================================== */
+    $("#btn__letter").on("click", function(){
+        fireConfetti();
+        $(".box__letter").css("display", "flex").hide().fadeIn(400);
+        setTimeout(() => $(".box__letter .letter__border").addClass("active"), 100);
+        
+        setTimeout(function(){
+            intervalTitle = setInterval(function(){
+                if(currentIndexTitle < charArrTitle.length){
+                    document.querySelector(".title__letter").textContent += charArrTitle[currentIndexTitle];
+                    currentIndexTitle++;
+                } else {
+                    let icon = document.createElement("i");
+                    icon.className = "fa-solid fa-heart fa-beat";
+                    icon.style.color = "#ff4d6d";
+                    icon.style.marginLeft = "8px";
+                    document.querySelector(".title__letter").appendChild(icon);
+                    clearInterval(intervalTitle);
+                }
+            }, 100)
+        }, 800)
+
+        setTimeout(function(){
+            document.querySelector("#heart__letter").classList.add("animationOp");
+            document.querySelector(".love__img").classList.add("animationOp");
+            document.querySelectorAll(".heart").forEach((item) => item.classList.add("animation"));
+        }, 1200)
+
+        setTimeout(function(){
+            intervalContent = setInterval(function(){
+                if(currentIndexLetter < charArrDateLetter.length){
+                    text__letter.textContent += charArrDateLetter[currentIndexLetter];
+                    currentIndexLetter++;
+                } else {
+                    clearInterval(intervalContent)
+                }
+            }, 50)
+        }, 2200)
+    })
+
+    $(".box__letter .close").on("click", function(){
+        clearInterval(intervalContent);
+        document.querySelector(".title__letter").textContent = "";
+        text__letter.textContent = "";
+        currentIndexLetter = 0; currentIndexTitle = 0;
+        document.querySelector("#heart__letter").classList.remove("animationOp");
+        document.querySelector(".love__img").classList.remove("animationOp");
+        document.querySelectorAll(".heart").forEach(item => item.classList.remove("animation"));
+        $(".box__letter .letter__border").removeClass("active");
+        setTimeout(() => $(".box__letter").fadeOut(400), 400);
+    });
+
+    /* ==================================
+       3D CAKE & CINEMATIC LIGHT LOGIC
+       ================================== */
+    $("#btn__cake").on("click", function() {
+        $("#cake-modal").css("display", "flex").hide().fadeIn(400);
+        setTimeout(() => $("#cake-modal .letter__border").addClass("active"), 100);
+        $("#flame").css("display", "block"); 
+        $(".wish-text").addClass("hidden");
+    });
+
+    $("#flame").on("click touchstart", function(e) {
+        e.preventDefault();
+        $(this).fadeOut(300); // Blow out candle
+        
+        // 1. Cinematic Darkness
+        $("#cake-modal").css("background", "#000000"); // Pitch Black
+        $("#cake-modal .letter__border").css({
+            "background": "#0a0a0a",
+            "box-shadow": "none",
+            "border-color": "#111"
+        });
+        $(".cake-3d").css("filter", "brightness(0.1)");
+        $(".instruction, .cake-title").css("opacity", "0");
+        
+        // 2. Party Neon Lights after darkness
+        setTimeout(() => {
+            $("#cake-modal").css("background", "radial-gradient(circle, #240046 0%, #000 100%)");
+            $("#cake-modal .letter__border").addClass("party-mode");
+            $(".cake-3d").css("filter", "brightness(1.1) drop-shadow(0 0 15px rgba(255,0,110,0.5))");
+            $(".wish-text").removeClass("hidden").hide().fadeIn();
+            fireConfetti();
+        }, 1500); // Stay dark for 1.5 seconds
+    });
+
+    $(".btn-close-cake").on("click", function(){
+        // Reset Everything on close so normal page is unaffected
+        $("#cake-modal .letter__border").removeClass("active party-mode");
+        
+        setTimeout(() => {
+            $("#cake-modal").fadeOut(400);
+            setTimeout(() => {
+                $("#cake-modal").css("background", "");
+                $("#cake-modal .letter__border").css({"background": "", "box-shadow": "", "border-color": ""});
+                $(".cake-3d").css("filter", "");
+                $(".instruction, .cake-title").css("opacity", "1");
+            }, 400);
+        }, 100);
+    });
+
+    /* ==================================
+       ADVANCED SCRATCH CARD LOGIC
+       ================================== */
+    let scratchCanvasInit = false;
+    $("#btn__scratch").on("click", function() {
+        $("#scratch-modal").css("display", "flex").hide().fadeIn(400);
+        setTimeout(() => $("#scratch-modal .letter__border").addClass("active"), 100);
+        
+        // Reset states
+        $(".scratch-secret").removeClass("pop-gift");
+        $("#scratch-canvas").show().css("opacity", "1");
+        $(".scratch-instruction").text("Scratch the gold foil to reveal your gift!");
+        initScratchCard();
+    });
+
+    $(".btn-close-scratch").on("click", function(){
+        $("#scratch-modal .letter__border").removeClass("active");
+        setTimeout(() => $("#scratch-modal").fadeOut(400), 400);
+    });
+
+    function initScratchCard() {
+        const canvas = document.getElementById("scratch-canvas");
+        const ctx = canvas.getContext("2d");
+        const container = document.getElementById("scratch-container");
+        
+        canvas.width = container.offsetWidth;
+        canvas.height = container.offsetHeight;
+        
+        // Realistic Gold Foil Background
+        let gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+        gradient.addColorStop(0, "#D4AF37");
+        gradient.addColorStop(0.5, "#FFDF73");
+        gradient.addColorStop(1, "#AA7700");
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // Foil Text
+        ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
+        ctx.font = "bold 22px Poppins";
+        ctx.textAlign = "center";
+        ctx.fillText("✨ SCRATCH ME ✨", canvas.width/2, canvas.height/2 + 8);
+
+        let isDrawing = false;
+        let isRevealed = false;
+        
+        function getBrushPos(e) {
+            let rect = canvas.getBoundingClientRect();
+            let x = (e.clientX || e.touches[0].clientX) - rect.left;
+            let y = (e.clientY || e.touches[0].clientY) - rect.top;
+            return { x, y };
+        }
+
+        function scratch(e) {
+            if (!isDrawing || isRevealed) return;
+            e.preventDefault();
+            let pos = getBrushPos(e);
+            ctx.globalCompositeOperation = "destination-out";
+            ctx.beginPath();
+            ctx.arc(pos.x, pos.y, 25, 0, 2 * Math.PI); // Bigger brush
+            ctx.fill();
+        }
+
+        function checkReveal() {
+            if(isRevealed) return;
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            let transparentPixels = 0;
+            for (let i = 3; i < imageData.data.length; i += 4) {
+                if (imageData.data[i] === 0) transparentPixels++;
+            }
+            const percentage = (transparentPixels / (canvas.width * canvas.height)) * 100;
+            
+            // Auto Reveal if 45% is scratched!
+            if (percentage > 45) { 
+                isRevealed = true;
+                $(canvas).animate({opacity: 0}, 500, function(){ $(this).hide(); });
+                
+                // Pop the gift out!
+                setTimeout(() => {
+                    $(".scratch-secret").addClass("pop-gift");
+                    $(".scratch-instruction").text("Yay! You found it! 🎉");
+                    confetti({ particleCount: 100, spread: 60, origin: { y: 0.7 }, zIndex: 1500 });
+                }, 200);
+            }
+        }
+
+        canvas.addEventListener("mousedown", () => isDrawing = true);
+        canvas.addEventListener("touchstart", () => isDrawing = true);
+        canvas.addEventListener("mouseup", () => { isDrawing = false; checkReveal(); });
+        canvas.addEventListener("touchend", () => { isDrawing = false; checkReveal(); });
+        canvas.addEventListener("mousemove", scratch);
+        canvas.addEventListener("touchmove", scratch);
+    }
+
+    /* ==================================
+       FLOATING LOVE NOTES
+       ================================== */
+    $(".love-note").on("click touchstart", function(e) {
+        e.preventDefault();
+        let msg = $(this).attr("data-msg");
+        let toast = $("#toast-note");
+        toast.text(msg).fadeIn(300);
+        setTimeout(() => toast.fadeOut(500), 3000);
+    });
+
+    // Helper Function
+    function fireConfetti() {
+        confetti({
+            particleCount: 200, spread: 90, origin: { y: 0.6 },
+            colors:['#ff4d6d', '#ff758f', '#fff', '#ffd60a'],
+            disableForReducedMotion: true,
+            zIndex: 2000
+        });
+    }
+</script>
+</body>
+</html>

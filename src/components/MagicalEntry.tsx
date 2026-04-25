@@ -108,6 +108,19 @@ const MagicalEntry = ({ onEnter }: Props) => {
         transition={{ duration: 4, repeat: Infinity }}
       />
 
+      {/* Teddy bear — cosy corner decoration */}
+      <motion.div
+        className="absolute top-10 left-14 select-none"
+        style={{
+          fontSize: "clamp(2.5rem, 5vw, 3.5rem)",
+          filter: "drop-shadow(0 0 16px rgba(210,160,100,0.6))",
+        }}
+        animate={{ y: [0, -10, 0], rotate: [-6, 6, -6] }}
+        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+      >
+        🧸
+      </motion.div>
+
       {/* Phase 1: Typewriter text */}
       {phase >= 1 && phase < 2 && (
         <motion.div
@@ -165,7 +178,7 @@ const MagicalEntry = ({ onEnter }: Props) => {
             onClick={onEnter}
           >
             <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-5xl">✨</span>
+              <span className="text-5xl">🧸</span>
             </div>
           </motion.div>
           <motion.p
