@@ -1,18 +1,23 @@
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 
-// Emoji pool with glow colour per type
+// Hearts-only pool — every variety with its matching glow colour
 const EMOJI_POOL: { emoji: string; glow: string }[] = [
-  { emoji: "🧸", glow: "rgba(210,160,100,0.5)" },   // Teddy bear — warm amber
-  { emoji: "💖", glow: "rgba(255,105,180,0.5)" },   // Sparkling heart
-  { emoji: "💕", glow: "rgba(255,180,200,0.4)" },   // Two hearts
-  { emoji: "🎀", glow: "rgba(255,100,160,0.45)" },  // Ribbon bow
-  { emoji: "🌸", glow: "rgba(255,183,197,0.45)" },  // Cherry blossom
-  { emoji: "🌟", glow: "rgba(255,230,100,0.5)" },   // Star
-  { emoji: "🦋", glow: "rgba(180,130,255,0.45)" },  // Butterfly
-  { emoji: "🍰", glow: "rgba(255,160,120,0.4)" },   // Cake slice
-  { emoji: "🎈", glow: "rgba(255,80,80,0.4)" },     // Balloon
-  { emoji: "✨", glow: "rgba(255,255,180,0.5)" },   // Sparkle
+  { emoji: "❤️",  glow: "rgba(255,  80,  80, 0.55)" },  // Classic red
+  { emoji: "🧡",  glow: "rgba(255, 150,  50, 0.50)" },  // Orange
+  { emoji: "💛",  glow: "rgba(255, 220,  60, 0.50)" },  // Yellow
+  { emoji: "💚",  glow: "rgba( 80, 200, 120, 0.45)" },  // Green
+  { emoji: "💙",  glow: "rgba( 80, 160, 255, 0.50)" },  // Blue
+  { emoji: "💜",  glow: "rgba(180, 100, 255, 0.50)" },  // Purple
+  { emoji: "🖤",  glow: "rgba(100,  80, 120, 0.40)" },  // Black
+  { emoji: "🤍",  glow: "rgba(255, 255, 255, 0.40)" },  // White
+  { emoji: "💗",  glow: "rgba(255, 160, 200, 0.50)" },  // Pink beating
+  { emoji: "💖",  glow: "rgba(255, 105, 180, 0.55)" },  // Sparkling
+  { emoji: "💕",  glow: "rgba(255, 180, 200, 0.45)" },  // Two hearts
+  { emoji: "💞",  glow: "rgba(255, 130, 170, 0.50)" },  // Revolving
+  { emoji: "💓",  glow: "rgba(255, 100, 140, 0.50)" },  // Beating
+  { emoji: "💝",  glow: "rgba(255,  80, 130, 0.50)" },  // Heart with ribbon
+  { emoji: "🩷",  glow: "rgba(255, 160, 190, 0.50)" },  // Light pink
 ];
 
 const FloatingHearts = () => {
@@ -52,7 +57,7 @@ const FloatingHearts = () => {
             y: "110vh",
             x: `${h.left + h.drift}vw`,
             opacity: [0, 0.55, 0.55, 0],
-            rotate: h.emoji === "🧸" ? [0, -8, 8, 0] : [0, 180, 360],
+            rotate: [-12, 12, -12],
           }}
           transition={{
             duration: h.duration,

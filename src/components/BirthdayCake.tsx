@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { motion } from "framer-motion";
+import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
 import { getTurningAge, getDaysUntilBirthday, isBirthdayToday, FRIEND_NAME } from "@/config/priyanka";
 
@@ -8,246 +8,376 @@ const BirthdayCake = () => {
   const daysLeft = getDaysUntilBirthday();
   const isToday = isBirthdayToday();
 
-  const totalCandles = Math.min(turningAge, 10);
+  // Set up 5 beautiful luxury ceremonial candles
+  const totalCandles = 5;
   const [litCandles, setLitCandles] = useState<boolean[]>(Array(totalCandles).fill(true));
   const allBlown = litCandles.every((c) => !c);
-  const [partyMode, setPartyMode] = useState<"idle" | "dark" | "party">("idle");
+  
+  // States for microphone blowing
+  const [micActive, setMicActive] = useState(false);
+  const [micError, setMicError] = useState(false);
+  const [isBlowing, setIsBlowing] = useState(false);
 
+  // Audio Context and node references
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+
+  // Trigger high-end celebration on all candles blown
+  useEffect(() => {
+    if (allBlown) {
+      // Release streams
+      stopMicrophone();
+
+      // Fire cinematic celebratory confetti cascade
+      confetti({ 
+        particleCount: 150, 
+        spread: 120, 
+        origin: { y: 0.4 }, 
+        colors: ["#e9c176", "#ffb4a6", "#d2bcff", "#f472b6", "#ffffff"] 
+      });
+
+      const end = Date.now() + 3000;
+      const interval = setInterval(() => {
+        if (Date.now() > end) return clearInterval(interval);
+        confetti({
+          particleCount: 40,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0 },
+          colors: ["#e9c176", "#ffb4a6"]
+        });
+        confetti({
+          particleCount: 40,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1 },
+          colors: ["#d2bcff", "#ffb4a6"]
+        });
+      }, 250);
+    }
+  }, [allBlown]);
+
+  // Handle single candle click blow out
   const blowCandle = (index: number) => {
     if (!litCandles[index]) return;
     setLitCandles((prev) => {
       const next = [...prev];
       next[index] = false;
-      const allOut = next.every((c) => !c);
-      if (allOut) {
-        // Cinematic: go dark first, then explode into party
-        setPartyMode("dark");
-        setTimeout(() => {
-          setPartyMode("party");
-          confetti({ particleCount: 200, spread: 100, origin: { y: 0.5 }, colors: ["#d2bcff", "#ffb4a6", "#e9c176", "#ff006e", "#fff"] });
-          setTimeout(() => confetti({ particleCount: 120, angle: 60,  spread: 70, origin: { x: 0 },   colors: ["#e9c176", "#ffb4a6"] }), 350);
-          setTimeout(() => confetti({ particleCount: 120, angle: 120, spread: 70, origin: { x: 1 },   colors: ["#d2bcff", "#ffb4a6"] }), 550);
-          setTimeout(() => confetti({ particleCount: 150, spread: 180, origin: { y: 0.3 }, colors: ["#fff", "#e9c176", "#d2bcff"] }), 900);
-        }, 1500);
-      }
       return next;
     });
   };
 
-  const reset = () => { setLitCandles(Array(totalCandles).fill(true)); setPartyMode("idle"); };
+  // Mic blowing analyzer logic
+  const startMicrophone = async () => {
+    try {
+      setMicError(false);
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      streamRef.current = stream;
+
+      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+      const audioContext = new AudioContextClass();
+      audioContextRef.current = audioContext;
+
+      const source = audioContext.createMediaStreamSource(stream);
+      const analyser = audioContext.createAnalyser();
+      analyser.fftSize = 256;
+      source.connect(analyser);
+      analyserRef.current = analyser;
+
+      setMicActive(true);
+      monitorSound();
+    } catch (err) {
+      console.error("Mic access denied or error:", err);
+      setMicError(true);
+    }
+  };
+
+  const stopMicrophone = () => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
+    }
+    if (audioContextRef.current) {
+      audioContextRef.current.close().catch(() => {});
+      audioContextRef.current = null;
+    }
+    setMicActive(false);
+  };
+
+  const monitorSound = () => {
+    if (!analyserRef.current) return;
+    const dataArray = new Uint8Array(analyserRef.current.frequencyBinCount);
+    
+    const analyze = () => {
+      if (!analyserRef.current) return;
+      analyserRef.current.getByteFrequencyData(dataArray);
+
+      // Sum values to detect blowing sound (broad-band noise / wind spikes)
+      let sum = 0;
+      for (let i = 0; i < dataArray.length; i++) {
+        sum += dataArray[i];
+      }
+      const averageVolume = sum / dataArray.length;
+
+      // Blowing threshold (typically creates broad high volume spikes)
+      if (averageVolume > 48) {
+        setIsBlowing(true);
+        // Blow out a candle at random that is still lit
+        setLitCandles((prev) => {
+          const litIndices = prev
+            .map((lit, idx) => (lit ? idx : -1))
+            .filter(idx => idx !== -1);
+          
+          if (litIndices.length > 0) {
+            const next = [...prev];
+            const randomIndexToBlow = litIndices[Math.floor(Math.random() * litIndices.length)];
+            next[randomIndexToBlow] = false;
+            return next;
+          }
+          return prev;
+        });
+      } else {
+        setIsBlowing(false);
+      }
+
+      if (streamRef.current) {
+        requestAnimationFrame(analyze);
+      }
+    };
+
+    analyze();
+  };
+
+  const reset = () => {
+    setLitCandles(Array(totalCandles).fill(true));
+    stopMicrophone();
+  };
+
+  useEffect(() => {
+    return () => stopMicrophone();
+  }, []);
 
   return (
-    <section
-      className="section-mixed py-20 px-4 relative overflow-hidden transition-all duration-700"
-      style={{
-        background: partyMode === "dark"
-          ? "#000"
-          : partyMode === "party"
-          ? "radial-gradient(circle at 50% 40%, #240046 0%, #10002b 100%)"
-          : undefined,
-        transition: "background 0.8s ease",
-      }}
-    >
-      {/* Cinematic party neon overlay */}
-      {partyMode === "party" && (
-        <motion.div
-          className="absolute inset-0 flex flex-col items-center justify-center z-30 pointer-events-none"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6 }}
-        >
-          <motion.p
-            className="font-display text-center px-6"
-            style={{
-              fontSize: "var(--t-4xl)",
-              background: "linear-gradient(135deg, #e9c176, #d2bcff, #ffb4a6)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              backgroundClip: "text",
-              textShadow: "none",
-              filter: "drop-shadow(0 0 20px rgba(255,0,110,0.6))",
-            }}
-            animate={{ scale: [0.8, 1.05, 1] }}
-            transition={{ type: "spring", bounce: 0.4 }}
-          >
-            🎉 Make a Wish, {FRIEND_NAME}! 🌟
-          </motion.p>
-          <motion.p
-            className="font-script mt-4"
-            style={{ fontSize: "var(--t-2xl)", color: "#d2bcff", textShadow: "0 0 20px #ff006e, 0 0 40px #e9c176" }}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.8 }}
-          >
-            The universe is listening… ✨
-          </motion.p>
-          <motion.button
-            className="mt-8 px-6 py-2 rounded-full font-body font-semibold pointer-events-auto"
-            style={{ background: "rgba(210,188,255,0.15)", border: "1px solid rgba(210,188,255,0.4)", color: "#d2bcff", fontSize: "var(--t-sm)" }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={reset}
-          >
-            🕯️ Relight Candles
-          </motion.button>
-        </motion.div>
-      )}
-      <motion.h2
-        className="text-4xl md:text-5xl font-display text-center text-lavender mb-2"
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-      >
-        Birthday Cake Ceremony 🎂
-      </motion.h2>
+    <section className="py-20 px-4 min-h-screen flex flex-col justify-center items-center relative overflow-hidden select-none">
+      {/* ambient glows */}
+      <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse at 50% 50%, rgba(210,188,255,0.04) 0%, transparent 60%)" }} />
 
-      {/* Birthday countdown or celebration */}
-      <motion.div
-        className="text-center mb-8"
+      <motion.p
+        className="chapter-label justify-center mb-3 relative z-10"
+        style={{ color: "var(--nc-tertiary)" }}
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
       >
-        {isToday ? (
-          <p className="text-lg font-body font-semibold" style={{ color: "hsl(45 90% 60%)" }}>
-            🎉 TODAY IS THE DAY! HAPPY BIRTHDAY {FRIEND_NAME.toUpperCase()}! 🎉
-          </p>
-        ) : (
-          <p className="text-sm font-body text-muted-foreground">
-            🗓️ {daysLeft} day{daysLeft !== 1 ? "s" : ""} until {FRIEND_NAME} turns{" "}
-            <span className="font-bold text-lavender">{turningAge}</span>! 🎂
-          </p>
-        )}
-      </motion.div>
-
-      <p className="text-center text-muted-foreground font-body mb-12">
-        {allBlown
-          ? "🎉 You blew them all out!"
-          : `Blow out the candles for ${FRIEND_NAME}'s ${turningAge}th birthday! 🕯️`}
-      </p>
-
-      <motion.div
-        className="flex flex-col items-center"
-        initial={{ opacity: 0, scale: 0.8 }}
-        whileInView={{ opacity: 1, scale: 1 }}
+        ✦ Chapter III
+      </motion.p>
+      
+      <motion.h2
+        className="font-display text-center mb-2 relative z-10 tracking-[-0.01em] text-white"
+        style={{ fontSize: "var(--t-5xl)" }}
+        initial={{ opacity: 0, y: 16 }}
+        whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
       >
-        {/* Cute 3D CSS Cake */}
-        <div className="relative mt-20 flex flex-col items-center">
-          {/* Candles directly sitting on the cake! */}
-          <div className="flex gap-4 mb-0 relative z-20 px-8 flex-wrap justify-center w-[280px]">
-            {litCandles.map((lit, i) => (
-              <motion.div
-                key={i}
-                className="relative flex flex-col items-center cursor-pointer group"
-                onClick={() => blowCandle(i)}
-                whileHover={{ scale: 1.15, y: -5 }}
-                whileTap={{ scale: 0.9 }}
+        Celestial Cake 🎂
+      </motion.h2>
+
+      <motion.p 
+        className="text-center font-body text-pink-200/60 text-sm md:text-base max-w-md mb-8 z-10"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+      >
+        {isToday ? (
+          <span className="font-semibold text-[#e9c176]">🎉 Today is Priyanka's Birthday! Happy Birthday! 🎉</span>
+        ) : (
+          <span>Priyanka's {turningAge}th birthday season is here. Make a beautiful wish. ✨</span>
+        )}
+      </motion.p>
+
+      {/* Mic Blowing Control panel */}
+      <div className="z-20 mb-8 flex flex-col items-center gap-2">
+        {!allBlown && (
+          <>
+            {!micActive ? (
+              <motion.button
+                onClick={startMicrophone}
+                className="px-5 py-2 rounded-full border border-pink-500/30 bg-pink-500/10 text-pink-300 text-xs font-body tracking-wider uppercase flex items-center gap-2 cursor-pointer hover:bg-pink-500/25 transition-all shadow-[0_0_15px_rgba(236,72,153,0.1)]"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
-                {/* Flame */}
+                🎤 Enable Mic blowing
+              </motion.button>
+            ) : (
+              <div className="px-5 py-2 rounded-full border border-green-500/30 bg-green-500/10 text-green-300 text-xs font-body tracking-wider uppercase flex items-center gap-2 shadow-[0_0_15px_rgba(34,197,94,0.1)]">
+                <span className={`w-2 h-2 rounded-full bg-green-400 ${isBlowing ? 'scale-150 bg-yellow-400 animate-ping' : 'animate-pulse'}`} />
+                🎤 Blow into mic to extinguish!
+              </div>
+            )}
+            {micError && (
+              <p className="text-[10px] font-body text-red-400">Microphone blocked. Direct tap mode active 🕯️</p>
+            )}
+          </>
+        )}
+      </div>
+
+      {/* Cake Container */}
+      <div className="relative mt-24 mb-16 flex flex-col items-center">
+        
+        {/* Sleek Minimalist Candles Container */}
+        <div className="absolute top-[-75px] z-30 flex justify-center gap-4.5 w-[220px]">
+          {litCandles.map((lit, i) => (
+            <div
+              key={i}
+              className="relative flex flex-col items-center cursor-pointer group p-3 -m-3"
+              onClick={() => blowCandle(i)}
+            >
+              {/* Custom SVG organic Flickering Flame */}
+              <AnimatePresence>
                 {lit && (
                   <motion.div
-                    className="text-3xl absolute -top-10 z-30 drop-shadow-[0_0_15px_#f6ad55]"
-                    animate={{ scale: [1, 1.15, 1], rotate: [-4, 4, -4] }}
-                    transition={{ duration: 0.4, repeat: Infinity, delay: i * 0.1 }}
+                    className="absolute -top-12 z-40 w-6 h-10 select-none pointer-events-none"
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0, opacity: 0, y: -20 }}
                   >
-                    🔥
+                    {/* Multi-layered flame glow */}
+                    <div className="absolute inset-0 bg-yellow-500 rounded-full blur-[8px] opacity-40 animate-pulse" />
+                    <svg viewBox="0 0 100 120" className="w-full h-full filter drop-shadow-[0_0_8px_rgba(233,193,118,0.7)]">
+                      <motion.path
+                        d="M50,10 C20,50 35,110 50,110 C65,110 80,50 50,10 Z"
+                        fill="url(#flameGrad)"
+                        animate={{
+                          d: [
+                            "M50,10 C20,50 35,110 50,110 C65,110 80,50 50,10 Z",
+                            "M50,13 C15,53 40,110 50,110 C60,110 85,53 50,13 Z",
+                            "M50,8 C25,48 30,110 50,110 C70,110 75,48 50,8 Z",
+                            "M50,10 C20,50 35,110 50,110 C65,110 80,50 50,10 Z"
+                          ]
+                        }}
+                        transition={{ duration: 0.55, repeat: Infinity, ease: "easeInOut" }}
+                      />
+                      <defs>
+                        <radialGradient id="flameGrad" cx="50%" cy="80%" r="55%">
+                          <stop offset="0%" stopColor="#ffffff" />
+                          <stop offset="35%" stopColor="#fff3d1" />
+                          <stop offset="70%" stopColor="#f59e0b" />
+                          <stop offset="100%" stopColor="#ef4444" stopOpacity="0" />
+                        </radialGradient>
+                      </defs>
+                    </svg>
                   </motion.div>
                 )}
-                {/* Smoke */}
+              </AnimatePresence>
+
+              {/* Smoke particle feedback */}
+              <AnimatePresence>
                 {!lit && (
                   <motion.div
-                    className="text-lg absolute -top-8 z-30 opacity-60 text-white"
-                    initial={{ y: 0, opacity: 1, scale: 1 }}
-                    animate={{ y: -30, opacity: 0, scale: 1.5 }}
-                    transition={{ duration: 1.5 }}
+                    className="absolute -top-10 z-40 text-sm text-pink-200 pointer-events-none select-none font-body"
+                    initial={{ y: 0, opacity: 0.9, scale: 0.8, filter: "blur(0px)" }}
+                    animate={{ y: -45, opacity: 0, scale: 1.6, filter: "blur(2px)" }}
+                    transition={{ duration: 1.6 }}
                   >
                     💨
                   </motion.div>
                 )}
-                {/* Candle Stick */}
-                <div className="w-3.5 h-14 rounded-full bg-gradient-to-b from-white to-pink-200 border border-pink-300 shadow-sm relative z-20">
-                   {/* Cute Stripes */}
-                   <div className="absolute inset-0 rounded-full overflow-hidden">
-                     <div className="w-full h-3 bg-pink-400 mt-2 rotate-12 opacity-80"></div>
-                     <div className="w-full h-3 bg-pink-400 mt-3 rotate-12 opacity-80"></div>
-                     <div className="w-full h-3 bg-pink-400 mt-3 rotate-12 opacity-80"></div>
-                   </div>
-                </div>
-              </motion.div>
+              </AnimatePresence>
+
+              {/* Sleek Minimalist Glass Candle Stick */}
+              <div className="w-1.5 h-16 rounded-full bg-gradient-to-b from-white/40 via-pink-400/30 to-pink-500/50 border border-white/20 shadow-sm relative overflow-hidden backdrop-blur-xs">
+                {/* Micro glowing core */}
+                {lit && (
+                  <div className="absolute top-0 inset-x-0 h-4 bg-yellow-400/40 blur-[1px] animate-pulse" />
+                )}
+                {/* Sleek metallic wick */}
+                <div className="absolute top-[-2px] left-1/2 -translate-x-1/2 w-0.5 h-3 bg-zinc-800 rounded-full" />
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Dynamic Celestial Glassmorphic Cake tiers */}
+        
+        {/* Tier 1 (Top Frosting / Glaze Layer) */}
+        <div className="w-[280px] h-[75px] rounded-[50%] bg-gradient-to-tr from-pink-500/40 via-purple-500/20 to-pink-400/55 border-t border-white/40 shadow-[0_4px_30px_rgba(244,114,182,0.15)] backdrop-blur-md relative z-10">
+          {/* Dripping organic gold-glow micro spots */}
+          <div className="absolute top-[35px] w-[260px] left-[10px] flex justify-between px-3 opacity-65">
+            {[...Array(6)].map((_, i) => (
+              <div 
+                key={i} 
+                className="w-4 bg-pink-400/50 rounded-b-[10px] border-b border-pink-300/30" 
+                style={{ height: `${12 + (i * 4) % 15}px` }} 
+              />
             ))}
-          </div>
-
-          {/* Top Layer (Frosting) */}
-          <div className="w-[320px] h-[100px] mt-[-15px] z-10 relative pointer-events-none">
-            <div className="absolute inset-0 bg-pink-400 rounded-[50%] shadow-[0_5px_25px_rgba(255,100,150,0.4)] border-t-2 border-pink-300"></div>
-            
-            {/* Frosting Drips */}
-            <div className="absolute top-[45px] w-[310px] left-[5px] flex justify-between px-2">
-               {[...Array(8)].map((_,i) => (
-                 <motion.div 
-                    key={i} 
-                    className="w-8 bg-pink-400 rounded-b-[20px] shadow-sm relative" 
-                    style={{ 
-                      height: `${30 + Math.random() * 30}px`,
-                      marginTop: `${-Math.random() * 5}px`
-                    }}
-                    animate={{ y: [0, 2, 0] }}
-                    transition={{ duration: 3, repeat: Infinity, delay: i * 0.2 }}
-                 >
-                   <div className="absolute bottom-1 right-1 w-2 h-2 rounded-full bg-white/30"></div>
-                 </motion.div>
-               ))}
-            </div>
-          </div>
-          
-          {/* Middle Body */}
-          <div className="w-[320px] h-[120px] mt-[-55px] bg-gradient-to-b from-amber-100 to-amber-200 shadow-inner z-0 flex items-center justify-center pt-10 pointer-events-none">
-            <span className="font-display text-pink-500 text-5xl font-bold tracking-widest bg-white/70 px-6 py-2 rounded-full backdrop-blur-md shadow-sm border border-white/80">
-              {turningAge}
-            </span>
-          </div>
-
-          {/* Bottom Cake Rim */}
-          <div className="w-[320px] h-[60px] bg-amber-200 rounded-[50%] mt-[-30px] shadow-[0_20px_40px_rgba(255,100,200,0.2)] z-0 pointer-events-none">
-            {/* Base Sprinkles */}
-            <div className="w-full flex justify-around px-8 mt-2 opacity-60">
-               <div className="w-2 h-1 bg-pink-400 rounded-full rotate-45"></div>
-               <div className="w-2 h-1 bg-blue-400 rounded-full -rotate-12"></div>
-               <div className="w-2 h-1 bg-purple-400 rounded-full rotate-90"></div>
-               <div className="w-2 h-1 bg-yellow-400 rounded-full rotate-12"></div>
-               <div className="w-2 h-1 bg-pink-400 rounded-full rotate-45"></div>
-               <div className="w-2 h-1 bg-blue-400 rounded-full -rotate-12"></div>
-            </div>
-          </div>
-
-          {/* Beautiful Glass Plate */}
-          <div className="w-[420px] h-[80px] bg-gradient-to-r from-white/10 via-white/30 to-white/10 rounded-[50%] mt-[-40px] shadow-2xl backdrop-blur-xl border border-white/40 z-[-1] flex items-center justify-center">
-            <div className="w-[360px] h-[60px] rounded-[50%] border-t border-white/60 mx-auto"></div>
           </div>
         </div>
 
-        {/* After blowing */}
+        {/* Tier 2 (Cake Middle Body Layer) */}
+        <div className="w-[280px] h-[95px] mt-[-40px] bg-gradient-to-b from-[#1c183a]/90 via-[#272352]/80 to-[#120f2b]/95 border-x border-white/5 shadow-2xl relative z-0 flex items-center justify-center pt-6">
+          <span 
+            className="font-display font-black text-[#e9c176] tracking-widest text-4xl"
+            style={{ filter: "drop-shadow(0 0 15px rgba(233,193,118,0.5))" }}
+          >
+            {turningAge}
+          </span>
+        </div>
+
+        {/* Tier 3 (Cake Base Layer) */}
+        <div className="w-[280px] h-[45px] bg-gradient-to-b from-[#120f2b]/95 to-[#0b081b]/100 rounded-[50%] mt-[-22px] shadow-[0_15px_30px_rgba(0,0,0,0.5)] z-0" />
+
+        {/* Holographic Glowing Plate Stand */}
+        <div className="w-[360px] h-[65px] bg-gradient-to-r from-white/5 via-white/20 to-white/5 rounded-[50%] mt-[-30px] border border-white/20 backdrop-blur-xl shadow-2xl z-[-1] flex items-center justify-center">
+          {/* Ambient platform reflection ring */}
+          <div className="w-[320px] h-[45px] rounded-[50%] border border-white/10" />
+        </div>
+      </div>
+
+      {/* Ceremony Interactive HUD Feedback */}
+      <div className="z-10 text-center min-h-[40px]">
+        <p className="font-body text-xs text-pink-300/40 uppercase tracking-widest">
+          {allBlown ? "✨ Celestial Wish Mode Activated ✨" : "Click candles or enable mic to blow them out"}
+        </p>
+      </div>
+
+      {/* Wish overlay on successful blowing */}
+      <AnimatePresence>
         {allBlown && (
           <motion.div
-            className="mt-8 text-center"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
+            className="fixed inset-0 z-[1000] flex flex-col items-center justify-center p-6 bg-[#030208]/96 backdrop-blur-2xl"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.8 }}
           >
-            <p className="text-xl font-display text-lavender mb-4">
-              🎊 Make a wish, {FRIEND_NAME}! The universe is listening... 🌟
-            </p>
-            <motion.button
-              className="px-5 py-2 rounded-full text-sm font-body border border-border text-muted-foreground"
-              whileHover={{ scale: 1.05 }}
-              onClick={reset}
+            <motion.div
+              className="text-center max-w-md p-8 rounded-3xl bg-[#161230]/50 border border-pink-500/20 shadow-[0_0_80px_rgba(210,188,255,0.15)] relative"
+              initial={{ scale: 0.85, y: 30 }}
+              animate={{ scale: 1, y: 0 }}
+              transition={{ type: "spring", delay: 0.2 }}
             >
-              🕯️ Relight candles
-            </motion.button>
+              <div className="text-5xl mb-6 select-none animate-bounce">🎂</div>
+              <h3 className="font-display text-white text-3xl mb-4 text-gradient">
+                Wish Granted!
+              </h3>
+              <p className="text-pink-100/70 font-body leading-relaxed mb-8">
+                Your five celestial candles have been extinguished. May every hidden dream and secret hope in your heart flourish, {FRIEND_NAME}. 🌸
+              </p>
+              
+              <div className="flex flex-col gap-3">
+                <motion.button
+                  onClick={reset}
+                  className="px-6 py-2.5 rounded-full bg-pink-500/15 border border-pink-400/25 text-pink-300 text-xs font-body uppercase tracking-wider cursor-pointer hover:bg-pink-500/30 transition-all"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  🕯️ Relight Ceremonial Candles
+                </motion.button>
+              </div>
+            </motion.div>
           </motion.div>
         )}
-      </motion.div>
+      </AnimatePresence>
     </section>
   );
 };

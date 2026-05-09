@@ -12,9 +12,6 @@ import ScrollProgressBar from "@/components/ScrollProgressBar";
 import CinematicHero from "@/components/CinematicHero";
 import FriendshipCounter from "@/components/FriendshipCounter";
 import FriendshipTimeline from "@/components/FriendshipTimeline";
-import SecretMessageVault from "@/components/SecretMessageVault";
-import WhyYouMatterGalaxy from "@/components/WhyYouMatterGalaxy";
-import BirthdayGame from "@/components/BirthdayGame";
 import BirthdayCake from "@/components/BirthdayCake";
 import FloatingHearts from "@/components/FloatingHearts";
 import PolaroidRain from "@/components/PolaroidRain";
@@ -23,7 +20,6 @@ import WishTree from "@/components/WishTree";
 import VHSMemories from "@/components/VHSMemories";
 import MessageInABottle from "@/components/MessageInABottle";
 import WishScrapbook from "@/components/WishScrapbook";
-import ScratchCard from "@/components/ScratchCard";
 import FriendshipCertificate from "@/components/FriendshipCertificate";
 import HandwrittenLetter from "@/components/HandwrittenLetter";
 import DarkModeToggle from "@/components/DarkModeToggle";
@@ -37,40 +33,46 @@ const sections = [
   { id: "cake", component: <BirthdayCake /> },
   { id: "timeline", component: <FriendshipTimeline /> },
   { id: "polaroids", component: <PolaroidRain /> },
-  { id: "scratch", component: <ScratchCard /> },
-  { id: "game", component: <BirthdayGame /> },
-  { id: "galaxy", component: <WhyYouMatterGalaxy /> },
-  { id: "vault", component: <SecretMessageVault /> },
   { id: "letter", component: <HandwrittenLetter /> },
 ];
 
 const bookVariants = {
   enter: (dir: number) => {
-    if (dir > 0) {
-      // Going forward: New page waits underneath, slightly smaller
-      return { opacity: 0, scale: 0.9, rotateY: 0, originX: 0, filter: "blur(5px)", zIndex: 0 };
-    } else {
-      // Going backward: The previous page flips BACK IN from the left side
-      return { opacity: 0, scale: 1, rotateY: -90, originX: 0, filter: "blur(0px)", zIndex: 10 };
-    }
+    return {
+      x: dir > 0 ? "100%" : "-100%",
+      opacity: 0,
+      scale: 0.96,
+      filter: "blur(4px)",
+      zIndex: 0
+    };
   },
   center: {
+    x: "0%",
     opacity: 1,
     scale: 1,
-    rotateY: 0,
-    originX: 0,
     filter: "blur(0px)",
     zIndex: 1,
-    transition: { duration: 1.2 }
+    transition: {
+      x: { type: "spring", stiffness: 220, damping: 26 },
+      opacity: { duration: 0.5, ease: "easeOut" },
+      scale: { duration: 0.5, ease: "easeOut" },
+      filter: { duration: 0.4, ease: "easeOut" }
+    }
   },
   exit: (dir: number) => {
-    if (dir > 0) {
-      // Going forward: The current page grabs its left edge and FLIPS completely over like a book
-      return { opacity: 0, scale: 1, rotateY: -90, originX: 0, filter: "blur(0px)", zIndex: 10, transition: { duration: 1.2 } };
-    } else {
-      // Going backward: The current page just fades out softly underneath
-      return { opacity: 0, scale: 0.9, rotateY: 0, originX: 0, filter: "blur(5px)", zIndex: 0, transition: { duration: 1.2 } };
-    }
+    return {
+      x: dir > 0 ? "-100%" : "100%",
+      opacity: 0,
+      scale: 0.96,
+      filter: "blur(4px)",
+      zIndex: 0,
+      transition: {
+        x: { type: "spring", stiffness: 220, damping: 26 },
+        opacity: { duration: 0.5, ease: "easeIn" },
+        scale: { duration: 0.5, ease: "easeIn" },
+        filter: { duration: 0.4, ease: "easeIn" }
+      }
+    };
   }
 };
 
@@ -108,15 +110,14 @@ const Index = () => {
     if (isAnimatingRef.current) return;
     if (currentSection < sections.length - 1) {
       isAnimatingRef.current = true;
-      triggerStardust();
       setDirection(1);
       setCurrentSection((prev) => prev + 1);
-      setTimeout(() => { isAnimatingRef.current = false; }, 1500);
+      setTimeout(() => { isAnimatingRef.current = false; }, 800);
 
       if (currentSection === sections.length - 2) {
         setTimeout(() => {
           confetti({ particleCount: 200, spread: 120, origin: { y: 0.8 }, colors: ["#b794f6", "#90cdf4", "#f6ad55", "#fbb6ce"] });
-        }, 1500);
+        }, 800);
       }
     }
   };
@@ -125,10 +126,9 @@ const Index = () => {
     if (isAnimatingRef.current) return;
     if (currentSection > 0) {
       isAnimatingRef.current = true;
-      triggerStardust();
       setDirection(-1);
       setCurrentSection((prev) => prev - 1);
-      setTimeout(() => { isAnimatingRef.current = false; }, 1500);
+      setTimeout(() => { isAnimatingRef.current = false; }, 800);
     }
   };
 
@@ -165,23 +165,40 @@ const Index = () => {
   if (headphoneScreen) {
     return (
       <div
-        className="min-h-screen nc-bg-hero flex flex-col items-center justify-center text-center px-6 cursor-pointer selection:bg-transparent overflow-hidden relative"
+        className="min-h-screen bg-background flex flex-col items-center justify-center text-center px-6 cursor-pointer selection:bg-transparent overflow-hidden relative"
         onClick={() => setHeadphoneScreen(false)}
       >
         <SparkleCursor />
+
+        {/* Cinematic Video Background C */}
+        <video
+          className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+          style={{ zIndex: 0, opacity: 0.65 }}
+          autoPlay
+          loop
+          muted
+          playsInline
+        >
+          <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260406_133058_0504132a-0cf3-4450-a370-8ea3b05c95d4.mp4" type="video/mp4" />
+        </video>
+
+        {/* Soft dark vignette on top of the video */}
+        <div className="absolute inset-0 bg-background/25 pointer-events-none" style={{ zIndex: 1 }} />
+
         {/* Ambient glow */}
         <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at 50% 40%, rgba(210,188,255,0.08) 0%, transparent 65%)' }} />
         {/* Floating particles */}
         {[...Array(20)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute rounded-full"
+            className="absolute rounded-full pointer-events-none"
             style={{
               width: Math.random() * 3 + 1,
               height: Math.random() * 3 + 1,
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
               background: ['#d2bcff','#ffb4a6','#e9c176'][i % 3],
+              zIndex: 2,
             }}
             animate={{ opacity: [0, 0.6, 0], y: [0, -60, -120] }}
             transition={{ duration: 6 + Math.random() * 6, repeat: Infinity, delay: Math.random() * 4 }}
@@ -307,16 +324,8 @@ const Index = () => {
               className="absolute inset-0 overflow-y-auto overflow-x-hidden [transform-style:preserve-3d]"
             >
               <div className="min-h-full flex flex-col justify-between items-center py-16 px-4 md:px-8 max-w-6xl mx-auto">
-                {/* Section content — glass surface, no hard border */}
-                <div
-                  className="w-full rounded-2xl p-5 md:p-10 shadow-2xl"
-                  style={{
-                    background: 'var(--glass-bg)',
-                    backdropFilter: 'var(--glass-blur)',
-                    WebkitBackdropFilter: 'var(--glass-blur)',
-                    border: '1px solid var(--nc-outline)',
-                  }}
-                >
+                {/* Section content — clean, full-bleed container with no bounding box */}
+                <div className="w-full">
                   {sections[currentSection].component}
                 </div>
 

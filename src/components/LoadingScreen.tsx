@@ -3,24 +3,23 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FRIEND_NAME } from "@/config/priyanka";
 
 const milestones = [
-  "Booting friendship memory banks...",
-  `Loading inside jokes with ${FRIEND_NAME}...`,
-  "Compressing a million smiles...",
-  "Counting all the times she guided you...",
-  "Converting trust into pure stardust...",
-  "Wrapping every memory with love...",
-  "Almost ready for the most beautiful girl...",
+  "Booting friendship memory banks…",
+  `Loading inside jokes with ${FRIEND_NAME}…`,
+  "Compressing a million smiles…",
+  "Counting all the times she guided you…",
+  "Converting trust into pure stardust…",
+  "Wrapping every memory with love…",
+  "Almost ready for the most beautiful girl…",
   `Ready. Happy Birthday, ${FRIEND_NAME}! 🎂`,
 ];
 
-/* Shooting stars that appear during loading */
-const LOADING_STARS = Array.from({ length: 5 }, (_, i) => ({
+const LOADING_STARS = Array.from({ length: 6 }, (_, i) => ({
   id: i,
-  top: 5 + i * 14,
-  left: 5 + i * 12,
-  delay: i * 2.5 + 1,
-  dur: 2 + i * 0.4,
-  width: 80 + i * 20,
+  top: 5 + i * 13,
+  left: 3 + i * 14,
+  delay: i * 2.2 + 0.8,
+  dur: 2.2 + i * 0.35,
+  width: 90 + i * 22,
 }));
 
 interface Props {
@@ -32,8 +31,7 @@ const LoadingScreen = ({ onComplete }: Props) => {
   const [milestoneIdx, setMilestoneIdx] = useState(0);
   const [exiting, setExiting] = useState(false);
 
-  /* Twinkling star positions (stable, computed once) */
-  const stars = Array.from({ length: 70 }, (_, i) => ({
+  const stars = Array.from({ length: 80 }, (_, i) => ({
     id: i,
     x: `${(i * 17 + 3) % 100}%`,
     y: `${(i * 23 + 7) % 100}%`,
@@ -71,9 +69,9 @@ const LoadingScreen = ({ onComplete }: Props) => {
       {!exiting && (
         <motion.div
           className="fixed inset-0 z-[100] flex flex-col items-center justify-center px-8 overflow-hidden"
-          style={{ background: "#0a0816" }}
-          exit={{ opacity: 0, scale: 1.05 }}
-          transition={{ duration: 0.7 }}
+          style={{ background: "linear-gradient(160deg, #08061a 0%, #0d0a1f 50%, #0a0616 100%)" }}
+          exit={{ opacity: 0, scale: 1.06 }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         >
           {/* Shooting stars */}
           <style>{`
@@ -107,103 +105,141 @@ const LoadingScreen = ({ onComplete }: Props) => {
               key={s.id}
               className="absolute rounded-full bg-white"
               style={{ left: s.x, top: s.y, width: s.size, height: s.size }}
-              animate={{ opacity: [0.1, 0.9, 0.1] }}
+              animate={{ opacity: [0.05, 0.8, 0.05] }}
               transition={{ duration: s.dur, repeat: Infinity, delay: s.delay }}
             />
           ))}
 
-          {/* Aurora glow behind content */}
+          {/* Animated aurora background */}
           <motion.div
             className="absolute inset-0 pointer-events-none"
             animate={{
               background: [
-                "radial-gradient(ellipse 60% 50% at 30% 50%, rgba(210,188,255,0.12) 0%, transparent 70%)",
-                "radial-gradient(ellipse 60% 50% at 70% 40%, rgba(255,180,166,0.10) 0%, transparent 70%)",
-                "radial-gradient(ellipse 60% 50% at 30% 50%, rgba(210,188,255,0.12) 0%, transparent 70%)",
+                "radial-gradient(ellipse 60% 50% at 25% 55%, rgba(210,188,255,0.14) 0%, transparent 65%), radial-gradient(ellipse 40% 40% at 75% 40%, rgba(255,180,166,0.08) 0%, transparent 60%)",
+                "radial-gradient(ellipse 60% 50% at 75% 45%, rgba(255,180,166,0.12) 0%, transparent 65%), radial-gradient(ellipse 40% 40% at 25% 60%, rgba(210,188,255,0.08) 0%, transparent 60%)",
+                "radial-gradient(ellipse 60% 50% at 25% 55%, rgba(210,188,255,0.14) 0%, transparent 65%), radial-gradient(ellipse 40% 40% at 75% 40%, rgba(255,180,166,0.08) 0%, transparent 60%)",
               ],
             }}
             transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
           />
 
-          {/* Main content */}
-          <div className="text-center max-w-md w-full z-10">
-            {/* Animated particle burst icon */}
-            <motion.div
-              className="text-6xl mb-8 block relative inline-block"
-              animate={{ scale: [1, 1.15, 1], rotate: [-5, 5, -5] }}
-              transition={{ duration: 3, repeat: Infinity }}
-            >
-              {/* Orbiting particles */}
-              {[0, 72, 144, 216, 288].map((deg, i) => (
-                <motion.span
-                  key={i}
-                  className="absolute text-sm"
-                  style={{ top: "50%", left: "50%", transformOrigin: "0 0" }}
-                  animate={{ rotate: [deg, deg + 360] }}
-                  transition={{ duration: 4 + i * 0.5, repeat: Infinity, ease: "linear" }}
-                >
-                  <span style={{
-                    display: "inline-block",
-                    transform: `translate(-50%, -50%) translateX(${30 + i * 4}px)`,
-                    fontSize: `${8 + i}px`,
-                  }}>
-                    {["✨", "🌸", "💙", "⭐", "🧸"][i]}
-                  </span>
-                </motion.span>
-              ))}
-              💙
-            </motion.div>
+          {/* Vignette */}
+          <div className="absolute inset-0 pointer-events-none" style={{
+            background: "radial-gradient(ellipse 80% 80% at 50% 50%, transparent 40%, rgba(5,3,15,0.7) 100%)"
+          }} />
 
+          {/* Main content */}
+          <div className="text-center max-w-sm w-full z-10">
+
+            {/* Logo icon — orbit rings + heart */}
+            <div className="relative flex items-center justify-center mb-10" style={{ height: 100 }}>
+              {[0, 1, 2].map((i) => (
+                <motion.div
+                  key={i}
+                  className="absolute rounded-full"
+                  style={{
+                    width: 56 + i * 26,
+                    height: 56 + i * 26,
+                    border: `1px solid rgba(${i === 0 ? "255,180,166" : i === 1 ? "210,188,255" : "233,193,118"},${0.45 - i * 0.1})`,
+                    boxShadow: `0 0 ${8 + i * 4}px rgba(${i === 0 ? "255,180,166" : i === 1 ? "210,188,255" : "233,193,118"},${0.1 - i * 0.02})`,
+                  }}
+                  animate={{ rotate: 360 * (i % 2 === 0 ? 1 : -1) }}
+                  transition={{ duration: 5 + i * 2.5, repeat: Infinity, ease: "linear" }}
+                >
+                  {/* Dot on ring */}
+                  <div
+                    className="absolute rounded-full"
+                    style={{
+                      width: 5, height: 5,
+                      top: -2.5, left: "50%",
+                      transform: "translateX(-50%)",
+                      background: i === 0 ? "#ffb4a6" : i === 1 ? "#d2bcff" : "#e9c176",
+                      boxShadow: `0 0 8px ${i === 0 ? "#ffb4a6" : i === 1 ? "#d2bcff" : "#e9c176"}`,
+                    }}
+                  />
+                </motion.div>
+              ))}
+              {/* Center pulsing heart */}
+              <motion.svg
+                width="26" height="26" viewBox="0 0 24 24" fill="none"
+                stroke="#ffb4a6" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
+                animate={{ scale: [1, 1.25, 1], opacity: [0.8, 1, 0.8] }}
+                transition={{ duration: 1.8, repeat: Infinity }}
+              >
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" fill="rgba(255,180,166,0.15)" />
+              </motion.svg>
+            </div>
+
+            {/* Title */}
             <motion.h1
-              className="text-2xl md:text-3xl font-display mb-10"
+              className="font-display mb-2"
               style={{
-                background: "linear-gradient(135deg, #d2bcff, #ffb4a6, #e9c176)",
+                fontSize: "clamp(1.4rem, 4vw, 2rem)",
+                fontWeight: 900,
+                background: "linear-gradient(135deg, #ffffff 0%, #d2bcff 40%, #ffb4a6 80%, #e9c176 100%)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
                 backgroundClip: "text",
+                letterSpacing: "-0.01em",
               }}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2, duration: 0.8 }}
             >
-              Something magical is loading...
+              Something magical is loading…
             </motion.h1>
 
-            {/* Progress bar */}
-            <div className="w-full rounded-full h-3 mb-3 overflow-hidden" style={{ background: "rgba(255,255,255,0.08)" }}>
+            <motion.p
+              className="font-body mb-8"
+              style={{ fontSize: "0.7rem", letterSpacing: "0.3em", color: "rgba(210,188,255,0.35)", textTransform: "uppercase" }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+            >
+              Nocturne Cinema
+            </motion.p>
+
+            {/* Progress bar track */}
+            <div
+              className="w-full rounded-full mb-3 overflow-hidden relative"
+              style={{ height: 3, background: "rgba(255,255,255,0.06)", boxShadow: "inset 0 1px 3px rgba(0,0,0,0.4)" }}
+            >
               <motion.div
-                className="h-full rounded-full"
+                className="h-full rounded-full relative"
                 style={{
                   background: "linear-gradient(90deg, #d2bcff, #ffb4a6, #e9c176)",
-                  boxShadow: "0 0 14px rgba(210,188,255,0.7)",
+                  boxShadow: "0 0 14px rgba(210,188,255,0.9), 0 0 4px rgba(255,180,166,0.6)",
                 }}
                 animate={{ width: `${progress}%` }}
                 transition={{ duration: 0.08 }}
               />
             </div>
 
-            <div className="flex justify-between mb-6 px-1">
-              <span className="text-sm font-body" style={{ color: "rgba(210,188,255,0.6)" }}>
+            {/* Progress % and tagline */}
+            <div className="flex justify-between mb-8 px-0.5">
+              <span className="font-body" style={{ fontSize: "0.65rem", color: "rgba(210,188,255,0.5)", letterSpacing: "0.1em" }}>
                 {progress}%
               </span>
               <motion.span
-                className="text-sm font-body"
-                style={{ color: "rgba(210,188,255,0.6)" }}
-                animate={{ opacity: [0.4, 1, 0.4] }}
-                transition={{ duration: 1.5, repeat: Infinity }}
+                className="font-script"
+                style={{ fontSize: "0.75rem", color: "rgba(255,180,166,0.4)" }}
+                animate={{ opacity: [0.4, 0.9, 0.4] }}
+                transition={{ duration: 2, repeat: Infinity }}
               >
-                ✨ made with love ✨
+                made with love ♡
               </motion.span>
             </div>
 
+            {/* Milestone text */}
             <AnimatePresence mode="wait">
               <motion.p
                 key={milestoneIdx}
-                className="text-base md:text-lg font-body"
-                style={{ color: "rgba(210,188,255,0.75)" }}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.35 }}
+                className="font-body"
+                style={{ fontSize: "clamp(0.85rem, 2vw, 1rem)", color: "rgba(210,188,255,0.7)", lineHeight: 1.6 }}
+                initial={{ opacity: 0, y: 8, filter: "blur(4px)" }}
+                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                exit={{ opacity: 0, y: -8, filter: "blur(4px)" }}
+                transition={{ duration: 0.4 }}
               >
                 {milestones[milestoneIdx]}
               </motion.p>

@@ -7,6 +7,21 @@ import { motion } from "framer-motion";
  */
 const AuroraBackground = () => (
   <>
+    {/* Cinematic Video Background */}
+    <video
+      className="fixed inset-0 w-full h-full object-cover pointer-events-none"
+      style={{ zIndex: -3, opacity: 0.58 }}
+      autoPlay
+      loop
+      muted
+      playsInline
+    >
+      <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260325_132944_a0d124bb-eaa1-4082-aa30-2310efb42b4b.mp4" type="video/mp4" />
+    </video>
+
+    {/* Soft dark overlay on top of the video */}
+    <div className="fixed inset-0 bg-background/20 pointer-events-none" style={{ zIndex: -2 }} />
+
     {/* Layer 1 — lavender blob, slow drift */}
     <motion.div
       className="fixed inset-0 pointer-events-none"
