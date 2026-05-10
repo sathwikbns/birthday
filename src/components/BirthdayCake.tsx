@@ -64,7 +64,7 @@ const BirthdayCake = () => {
     }
   }, [allBlown]);
 
-  // Mouse tilt tracking handler
+  // Mouse tilt tracking handler for subtle isometric depth shift
   const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const width = rect.width;
@@ -72,9 +72,9 @@ const BirthdayCake = () => {
     const mouseX = e.clientX - rect.left - width / 2;
     const mouseY = e.clientY - rect.top - height / 2;
     
-    // Scale rotation to max 12 degrees to keep it smooth and elegant
-    setRotateX(-mouseY / height * 12);
-    setRotateY(mouseX / width * 12);
+    // Smooth 3D tilt reaction
+    setRotateX(-mouseY / height * 10);
+    setRotateY(mouseX / width * 10);
   };
 
   const handleMouseLeave = () => {
@@ -182,15 +182,15 @@ const BirthdayCake = () => {
 
   return (
     <section 
-      className="py-20 px-4 min-h-screen flex flex-col justify-center items-center relative overflow-hidden select-none"
+      className="py-16 px-4 min-h-screen flex flex-col justify-center items-center relative overflow-hidden select-none"
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
-      {/* Dynamic ambient candle lighting background glow */}
+      {/* Soft ambient back-glow behind the main section */}
       <div 
         className="absolute inset-0 pointer-events-none transition-all duration-1000 ease-out z-0" 
         style={{ 
-          background: `radial-gradient(ellipse at 50% 50%, rgba(255, 180, 100, ${0.03 + (litCount * 0.02)}) 0%, rgba(18, 14, 32, 0) 70%)` 
+          background: `radial-gradient(ellipse at 50% 50%, rgba(255, 170, 110, ${0.02 + (litCount * 0.025)}) 0%, rgba(18, 14, 32, 0) 75%)` 
         }} 
       />
 
@@ -227,7 +227,7 @@ const BirthdayCake = () => {
       </motion.p>
 
       {/* Mic Blowing Control panel */}
-      <div className="z-20 mb-8 flex flex-col items-center gap-2">
+      <div className="z-20 mb-6 flex flex-col items-center gap-2">
         {!allBlown && (
           <>
             {!micActive ? (
@@ -252,294 +252,319 @@ const BirthdayCake = () => {
         )}
       </div>
 
-      {/* 3D Tilting Cake Arena */}
+      {/* Breathtakingly Realistic Vector Cake Arena */}
       <motion.div
-        className="relative mt-20 mb-16 flex flex-col items-center"
+        className="relative flex flex-col items-center w-full max-w-[420px] aspect-square xs:scale-[0.95] sm:scale-100 md:scale-105 transition-all duration-300 z-10"
         animate={{ rotateX, rotateY }}
-        transition={{ type: "spring", stiffness: 120, damping: 28 }}
+        transition={{ type: "spring", stiffness: 100, damping: 25 }}
         style={{ transformStyle: "preserve-3d", perspective: 1000 }}
       >
-        {/* Ambient Candle back-glow (behind the cake platter) */}
+        {/* Soft magical halo behind the SVG */}
         <div 
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 rounded-full blur-[70px] pointer-events-none transition-all duration-1000 z-[-10]"
+          className="absolute inset-0 rounded-full blur-[90px] pointer-events-none transition-all duration-1000 z-[-1]"
           style={{
-            background: `radial-gradient(circle, rgba(233, 150, 100, ${0.12 * (litCount / 5)}) 0%, rgba(180, 100, 255, ${0.05 * (litCount / 5)}) 50%, transparent 100%)`
+            background: `radial-gradient(circle, rgba(233, 160, 110, ${0.16 * (litCount / 5)}) 0%, rgba(190, 110, 255, ${0.08 * (litCount / 5)}) 50%, transparent 80%)`
           }}
         />
 
-        {/* Dynamic Celestial Gourmet 3D Cake */}
-        <div className="relative flex flex-col items-center select-none scale-[0.85] xs:scale-[0.95] sm:scale-100 md:scale-110 transition-all duration-300">
+        {/* Unified 3D Vector SVG Masterpiece */}
+        <svg 
+          viewBox="0 0 500 500" 
+          className="w-full h-full filter drop-shadow-[0_15px_45px_rgba(0,0,0,0.65)] overflow-visible"
+        >
+          <defs>
+            {/* Soft shadow gradients */}
+            <radialGradient id="cakeBaseShadow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="rgba(0,0,0,0.6)" />
+              <stop offset="70%" stopColor="rgba(0,0,0,0.35)" />
+              <stop offset="100%" stopColor="rgba(0,0,0,0)" />
+            </radialGradient>
+            
+            {/* Chrome/Silver Platter leg */}
+            <linearGradient id="platterGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#ffffff" />
+              <stop offset="35%" stopColor="#d4d4d8" />
+              <stop offset="65%" stopColor="#a1a1aa" />
+              <stop offset="100%" stopColor="#71717a" />
+            </linearGradient>
+
+            {/* Chocolate fudge layers */}
+            <linearGradient id="chocolateSide" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#3d210c" />
+              <stop offset="15%" stopColor="#2c1606" />
+              <stop offset="85%" stopColor="#1e0f03" />
+              <stop offset="100%" stopColor="#120801" />
+            </linearGradient>
+            <radialGradient id="chocolateTop" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="#4e2c14" />
+              <stop offset="70%" stopColor="#2c1606" />
+              <stop offset="100%" stopColor="#1a0b01" />
+            </radialGradient>
+
+            {/* Strawberry glaze layers */}
+            <linearGradient id="strawberrySide" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#ff456e" />
+              <stop offset="15%" stopColor="#e61a4c" />
+              <stop offset="85%" stopColor="#a3092b" />
+              <stop offset="100%" stopColor="#660014" />
+            </linearGradient>
+            <radialGradient id="strawberryTop" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="#ff7093" />
+              <stop offset="65%" stopColor="#e61a4c" />
+              <stop offset="100%" stopColor="#910020" />
+            </radialGradient>
+
+            {/* Specular gloss highlights */}
+            <linearGradient id="glazeHighlight" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="rgba(255,255,255,0.4)" stopOpacity="0.4" />
+              <stop offset="50%" stopColor="rgba(255,255,255,0.08)" stopOpacity="0.1" />
+              <stop offset="100%" stopColor="rgba(255,255,255,0)" stopOpacity="0" />
+            </linearGradient>
+
+            {/* Gold Leaf Flakes Gradients */}
+            <linearGradient id="goldGloss" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#fff3be" />
+              <stop offset="50%" stopColor="#e2b44d" />
+              <stop offset="100%" stopColor="#875f10" />
+            </linearGradient>
+
+            {/* Candle Candle-sticks Stripe */}
+            <linearGradient id="candleStripe" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#ffd1dc" />
+              <stop offset="50%" stopColor="#f472b6" />
+              <stop offset="100%" stopColor="#be185d" />
+            </linearGradient>
+
+            {/* Flame vector colors */}
+            <radialGradient id="fireGrad" cx="50%" cy="80%" r="55%">
+              <stop offset="0%" stopColor="#ffffff" />
+              <stop offset="35%" stopColor="#fffae0" />
+              <stop offset="70%" stopColor="#f59e0b" />
+              <stop offset="100%" stopColor="#dc2626" stopOpacity="0" />
+            </radialGradient>
+          </defs>
+
+          {/* 1. PLATE SHADOW */}
+          <ellipse cx="250" cy="445" rx="180" ry="30" fill="url(#cakeBaseShadow)" />
+
+          {/* 2. CHROME CRYSTAL PLATTER */}
+          {/* Base Stand foot */}
+          <ellipse cx="250" cy="440" rx="90" ry="18" fill="url(#platterGrad)" />
+          <path d="M210,438 C210,410 230,400 235,395 L265,395 C270,400 290,410 290,438 Z" fill="url(#platterGrad)" stroke="#71717a" strokeWidth="0.5" />
+          {/* Glass plate top edge */}
+          <ellipse cx="250" cy="395" rx="175" ry="32" fill="url(#platterGrad)" stroke="#ffffff" strokeWidth="1" />
+          {/* Semi-translucent glass lip highlight */}
+          <ellipse cx="250" cy="392" rx="170" ry="28" fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="1.5" />
+
+          {/* 3. LOWER TIER (RICH DARK CHOCOLATE VELVET) */}
+          {/* Side cylinder body */}
+          <path d="M100,310 L100,380 C100,410 400,410 400,380 L400,310 Z" fill="url(#chocolateSide)" />
+          {/* Top Oval surface */}
+          <ellipse cx="250" cy="310" rx="150" ry="38" fill="url(#chocolateTop)" />
           
-          {/* ELEGANT METALLIC GOLDEN CAKE TOPPER SIGNET */}
-          <div className="absolute top-[-92px] z-30 flex flex-col items-center select-none pointer-events-none">
-            {/* The physical support rods that push into the cake */}
-            <div className="absolute bottom-[-10px] left-[35%] w-[1.5px] h-10 bg-gradient-to-b from-yellow-300/60 to-transparent shadow-sm z-10" />
-            <div className="absolute bottom-[-10px] right-[35%] w-[1.5px] h-10 bg-gradient-to-b from-yellow-300/60 to-transparent shadow-sm z-10" />
+          {/* Glossy highlight reflect stripe on chocolate side */}
+          <path d="M140,312 C140,312 180,355 180,385 C180,388 160,395 150,395 C145,395 130,360 130,312 Z" fill="url(#glazeHighlight)" opacity="0.3" />
 
-            <svg viewBox="0 0 200 60" className="w-[180px] h-[65px] filter drop-shadow-[0_2px_8px_rgba(233,193,118,0.75)]">
-              <defs>
-                <linearGradient id="goldLuster" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#fff3be" />
-                  <stop offset="25%" stopColor="#dfb256" />
-                  <stop offset="50%" stopColor="#9a7123" />
-                  <stop offset="75%" stopColor="#ebd289" />
-                  <stop offset="100%" stopColor="#bfa14c" />
-                </linearGradient>
-              </defs>
-              <text x="50%" y="32" textAnchor="middle" fill="url(#goldLuster)" className="font-script text-[22px] font-black italic tracking-wide">
-                Happy Birthday
-              </text>
-              <text x="50%" y="54" textAnchor="middle" fill="url(#goldLuster)" className="font-script text-[18px] font-black italic tracking-wider">
-                Priyanka
-              </text>
-            </svg>
-          </div>
+          {/* Vanilla Cream filling sandwich in the center of lower tier */}
+          <path d="M100,342 Q250,378 400,342 L400,351 Q250,387 100,351 Z" fill="#fffcf0" stroke="#ebdcb0" strokeWidth="0.5" />
 
-          {/* THE CANDLES: Placed inside the top cake tier */}
-          <div className="absolute top-[-34px] z-30 flex justify-center gap-3 w-[180px]">
-            {litCandles.map((lit, i) => (
-              <div
-                key={i}
-                className="relative flex flex-col items-center cursor-pointer group p-3 -m-3 z-30"
-                onClick={() => blowCandle(i)}
+          {/* Shimmering Gold Flakes on Chocolate surface */}
+          <g filter="drop-shadow(0 1px 3px rgba(226,180,77,0.5))">
+            {/* Flake 1 */}
+            <path d="M140,310 L145,308 L142,314 L138,312 Z" fill="url(#goldGloss)" />
+            {/* Flake 2 */}
+            <path d="M340,318 L343,315 L345,321 L338,320 Z" fill="url(#goldGloss)" />
+            {/* Flake 3 */}
+            <path d="M250,332 L254,329 L251,335 L247,333 Z" fill="url(#goldGloss)" />
+            {/* Flake 4 */}
+            <path d="M175,325 L178,322 L176,328 L171,326 Z" fill="url(#goldGloss)" />
+          </g>
+
+          {/* 4. UPPER TIER (DELICIOUS STRAWBERRY GLAZE) */}
+          {/* Side cylinder body */}
+          <path d="M140,210 L140,285 C140,310 360,310 360,285 L360,210 Z" fill="url(#strawberrySide)" />
+          {/* Top Oval surface */}
+          <ellipse cx="250" cy="210" rx="110" ry="28" fill="url(#strawberryTop)" />
+
+          {/* Specular glass highlight reflection arc on strawberry dome */}
+          <ellipse cx="250" cy="207" rx="100" ry="24" fill="none" stroke="rgba(255,255,255,0.25)" strokeWidth="2.5" strokeDasharray="140 180" />
+
+          {/* Dripping glossy strawberry jam drops cascading down */}
+          <g fill="#7d0019" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.5))">
+            {/* Drip 1 */}
+            <path d="M140,210 Q145,235 145,245 C145,249 141,252 138,250 C135,248 136,230 140,210 Z" />
+            {/* Drip 2 */}
+            <path d="M185,213 Q190,240 191,252 C191,257 184,260 182,255 C180,250 181,230 185,213 Z" />
+            {/* Drip 3 */}
+            <path d="M245,215 Q248,238 249,248 C249,252 243,254 241,250 C239,246 241,230 245,215 Z" />
+            {/* Drip 4 */}
+            <path d="M295,214 Q300,242 301,256 C301,262 294,263 291,258 C289,252 291,230 295,214 Z" />
+            {/* Drip 5 */}
+            <path d="M350,211 Q353,232 353,240 C353,244 348,246 346,242 C344,238 347,225 350,211 Z" />
+          </g>
+
+          {/* Whipped Cream Swirls on the top strawberry rim */}
+          {[
+            { cx: 155, cy: 202, rx: 11, ry: 6 },
+            { cx: 195, cy: 218, rx: 12, ry: 7 },
+            { cx: 250, cy: 226, rx: 13, ry: 7 },
+            { cx: 305, cy: 218, rx: 12, ry: 7 },
+            { cx: 345, cy: 202, rx: 11, ry: 6 },
+            { cx: 250, cy: 196, rx: 11, ry: 5 }
+          ].map((cr, i) => (
+            <g key={i}>
+              {/* White cream swirl body */}
+              <ellipse cx={cr.cx} cy={cr.cy} rx={cr.rx} ry={cr.ry} fill="#fffcf7" stroke="#eadecc" strokeWidth="0.5" />
+              <path d={`M${cr.cx - cr.rx * 0.7},${cr.cy} C${cr.cx - 2},${cr.cy - 12} ${cr.cx + 2},${cr.cy - 12} ${cr.cx + cr.rx * 0.7},${cr.cy} Z`} fill="#ffffff" />
+              
+              {/* Shiny dark-red fresh cherry on top of swirl */}
+              <circle cx={cr.cx} cy={cr.cy - 10} r="6.5" fill="none" />
+              <path d={`M${cr.cx - 5},${cr.cy - 12} A6,6 0 1,1 ${cr.cx + 5},${cr.cy - 12} Z`} fill="q" />
+              {/* Real vector shading for Cherry */}
+              <circle cx={cr.cx} cy={cr.cy - 9} r="5" fill="url(#cherryShade)" />
+              <radialGradient id="cherryShade" cx="35%" cy="35%" r="65%">
+                <stop offset="0%" stopColor="#ff4d70" />
+                <stop offset="35%" stopColor="#d61131" />
+                <stop offset="85%" stopColor="#7a0114" />
+                <stop offset="100%" stopColor="#40000a" />
+              </radialGradient>
+              {/* Specular cherry reflection highlight */}
+              <circle cx={cr.cx - 2} cy={cr.cy - 11} r="1.5" fill="#ffffff" opacity="0.85" />
+              {/* Curved cherry stalk */}
+              <path d={`M${cr.cx},${cr.cy - 13} Q${cr.cx + 6},${cr.cy - 24} ${cr.cx + 3},${cr.cy - 28}`} fill="none" stroke="#4b5563" strokeWidth="1" strokeLinecap="round" />
+            </g>
+          ))}
+
+
+          {/* 5. TURNING AGE BADGE Embedded in the lower Chocolate Tier */}
+          <g transform="translate(250, 362) translateZ(10px)">
+            {/* Elegant Golden badge frame */}
+            <rect x="-32" y="-18" width="64" height="34" rx="6" fill="#180c04" stroke="url(#goldGloss)" strokeWidth="2" filter="drop-shadow(0 2px 5px rgba(0,0,0,0.6))" />
+            {/* Micro texts */}
+            <text x="0" y="-8" textAnchor="middle" fill="url(#goldGloss)" fontSize="6" fontFamily="sans-serif" fontWeight="900" letterSpacing="1.2">TURNING</text>
+            <text x="0" y="11" textAnchor="middle" fill="#ffffff" fontSize="19" fontFamily="'Playfair Display', serif" fontWeight="900" letterSpacing="0.5" filter="drop-shadow(0 0 4px rgba(255,255,255,0.25))">{turningAge}</text>
+          </g>
+
+
+          {/* 6. HYPER-REALISTIC LUXURY CEREMONIAL CANDLES (Interactive) */}
+          {[
+            { cx: 175, cy: 202, index: 0 },
+            { cx: 212, cy: 213, index: 1 },
+            { cx: 250, cy: 217, index: 2 },
+            { cx: 288, cy: 213, index: 3 },
+            { cx: 325, cy: 202, index: 4 }
+          ].map((c) => {
+            const isLit = litCandles[c.index];
+            return (
+              <g 
+                key={c.index} 
+                className="cursor-pointer group select-none" 
+                onClick={() => blowCandle(c.index)}
               >
-                {/* Custom SVG organic Flickering Flame */}
+                {/* Invisible larger click/hover shield */}
+                <ellipse cx={c.cx} cy={c.cy - 25} rx="16" ry="38" fill="transparent" />
+
+                {/* Candle Wick line */}
+                <line x1={c.cx} y1={c.cy - 38} x2={c.cx} y2={c.cy - 44} stroke="#1f2937" strokeWidth="1.5" strokeLinecap="round" />
+
+                {/* Luxury striped candle-stick */}
+                <rect x={c.cx - 3.5} y={c.cy - 38} width="7" height="38" rx="1.5" fill="url(#candleStripe)" stroke="#ffffff" strokeWidth="0.25" />
+                {/* Spiral golden stripe overlay wrapper */}
+                <path d={`M${c.cx - 3.5},${c.cy - 32} L${c.cx + 3.5},${c.cy - 35} M${c.cx - 3.5},${c.cy - 22} L${c.cx + 3.5},${c.cy - 25} M${c.cx - 3.5},${c.cy - 12} L${c.cx + 3.5},${c.cy - 15}`} stroke="url(#goldGloss)" strokeWidth="1.2" opacity="0.85" />
+
+                {/* FLICKERING CANDLE FLAME AND GLOW HALO */}
                 <AnimatePresence>
-                  {lit && (
-                    <motion.div
-                      className="absolute -top-11 z-40 w-5 h-9 select-none pointer-events-none"
+                  {isLit && (
+                    <motion.g
                       initial={{ scale: 0, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
+                      animate={{ 
+                        scale: [1, 1.06, 0.94, 1],
+                        opacity: 1
+                      }}
                       exit={{ scale: 0, opacity: 0, y: -25 }}
+                      transition={{ 
+                        scale: { repeat: Infinity, duration: 0.65, ease: "easeInOut" }
+                      }}
                     >
-                      {/* Multi-layered flame glow */}
-                      <div className="absolute inset-0 bg-yellow-500 rounded-full blur-[8px] opacity-40 animate-pulse" />
-                      <svg viewBox="0 0 100 120" className="w-full h-full filter drop-shadow-[0_0_8px_rgba(233,193,118,0.85)]">
-                        <motion.path
-                          d="M50,10 C20,50 35,110 50,110 C65,110 80,50 50,10 Z"
-                          fill="url(#flameGrad)"
-                          animate={{
-                            d: [
-                              "M50,10 C20,50 35,110 50,110 C65,110 80,50 50,10 Z",
-                              "M50,13 C15,53 40,110 50,110 C60,110 85,53 50,13 Z",
-                              "M50,8 C25,48 30,110 50,110 C70,110 75,48 50,8 Z",
-                              "M50,10 C20,50 35,110 50,110 C65,110 80,50 50,10 Z"
-                            ]
-                          }}
-                          transition={{ duration: 0.5, repeat: Infinity, ease: "easeInOut" }}
-                        />
-                        <defs>
-                          <radialGradient id="flameGrad" cx="50%" cy="80%" r="55%">
-                            <stop offset="0%" stopColor="#ffffff" />
-                            <stop offset="30%" stopColor="#ffe99d" />
-                            <stop offset="65%" stopColor="#f59e0b" />
-                            <stop offset="100%" stopColor="#ef4444" stopOpacity="0" />
-                          </radialGradient>
-                        </defs>
-                      </svg>
-                    </motion.div>
+                      {/* Sub-halo background radial flare */}
+                      <circle cx={c.cx} cy={c.cy - 52} r="15" fill="#f59e0b" filter="blur(5px)" opacity="0.35" className="pointer-events-none" />
+                      
+                      {/* Organic Flame path shape */}
+                      <path 
+                        d={`M${c.cx},${c.cy - 64} C${c.cx - 7},${c.cy - 51} ${c.cx - 5},${c.cy - 43} ${c.cx},${c.cy - 43} C${c.cx + 5},${c.cy - 43} ${c.cx + 7},${c.cy - 51} ${c.cx},${c.cy - 64} Z`} 
+                        fill="url(#fireGrad)" 
+                        filter="drop-shadow(0 0 6px rgba(245,158,11,0.6))"
+                      />
+                      
+                      {/* Golden micro flame center core */}
+                      <ellipse cx={c.cx} cy={c.cy - 48} rx="2" ry="4" fill="#ffffff" opacity="0.9" />
+                    </motion.g>
                   )}
                 </AnimatePresence>
 
-                {/* Smoke particle feedback */}
+                {/* Smoke particle when candle is extinguished */}
                 <AnimatePresence>
-                  {!lit && (
-                    <motion.div
-                      className="absolute -top-10 z-40 text-sm text-pink-200 pointer-events-none select-none font-body"
-                      initial={{ y: 0, opacity: 0.9, scale: 0.8, filter: "blur(0px)" }}
-                      animate={{ y: -50, opacity: 0, scale: 1.8, filter: "blur(2px)" }}
-                      transition={{ duration: 1.8 }}
+                  {!isLit && (
+                    <motion.g
+                      initial={{ opacity: 0.8, y: 0, scale: 0.8 }}
+                      animate={{ opacity: 0, y: -40, scale: 2 }}
+                      transition={{ duration: 1.5, ease: "easeOut" }}
                     >
-                      💨
-                    </motion.div>
+                      <circle cx={c.cx} cy={c.cy - 48} r="3" fill="#e4e4e7" filter="blur(2px)" />
+                      <circle cx={c.cx + 4} cy={c.cy - 56} r="4.5" fill="#d4d4d8" filter="blur(3px)" />
+                    </motion.g>
                   )}
                 </AnimatePresence>
+              </g>
+            );
+          })}
 
-                {/* Sleek Minimalist Glass Candle Stick */}
-                <div className="w-1.5 h-12 rounded-full bg-gradient-to-b from-white/70 via-pink-400/40 to-pink-500/60 border border-white/30 shadow-sm relative overflow-hidden backdrop-blur-xs">
-                  {/* Micro glowing core */}
-                  {lit && (
-                    <div className="absolute top-0 inset-x-0 h-4 bg-yellow-400/40 blur-[1px] animate-pulse" />
-                  )}
-                  {/* Sleek metallic wick */}
-                  <div className="absolute top-[-2px] left-1/2 -translate-x-1/2 w-0.5 h-2.5 bg-zinc-800 rounded-full" />
-                </div>
-              </div>
-            ))}
-          </div>
 
-          {/* TIER 2 (TOP TIER) - STRAWBERRY GLAZE & FRESH CHERRIES */}
-          {/* Top Oval Face */}
-          <div 
-            className="w-[180px] h-[60px] rounded-[50%] bg-gradient-to-tr from-[#ff3c69] via-[#ff5c84] to-[#ffa3b8] border-t-2 border-white/85 shadow-[0_6px_30px_rgba(255,60,105,0.45)] relative z-20 flex items-center justify-center overflow-visible"
-            style={{ boxShadow: "inset 0 4px 12px rgba(255,255,255,0.4), 0 8px 32px rgba(255, 60, 105, 0.3)" }}
-          >
-            {/* Real Candlestick Base indents */}
-            <div className="absolute inset-0 flex justify-center gap-3 items-center pt-2">
-              {[...Array(5)].map((_, i) => (
-                <div key={i} className="w-1.5 h-1.5 rounded-full bg-rose-800/40 shadow-inner" />
-              ))}
-            </div>
+          {/* 7. MAGNIFICENT METALLIC GOLD CAKE TOPPER SIGNET */}
+          <g filter="drop-shadow(0 3px 6px rgba(183,140,49,0.5))">
+            {/* Fine physical support wires anchoring into strawberry tier */}
+            <line x1="200" y1="180" x2="200" y2="100" stroke="url(#goldGloss)" strokeWidth="1" opacity="0.75" />
+            <line x1="300" y1="180" x2="300" y2="100" stroke="url(#goldGloss)" strokeWidth="1" opacity="0.75" />
 
-            {/* Scattered Shimmering Gold Flakes & Sprinkles */}
-            {[
-              { top: "12px", left: "25px", color: "#ffd700", rot: "15deg" },
-              { top: "28px", left: "55px", color: "#ffffff", rot: "-25deg" },
-              { top: "15px", left: "105px", color: "#ffd700", rot: "45deg" },
-              { top: "32px", left: "135px", color: "#ffffff", rot: "-10deg" },
-              { top: "38px", left: "80px", color: "#ffe066", rot: "70deg" },
-            ].map((sp, i) => (
-              <div
-                key={i}
-                className="absolute w-2 h-1 rounded-full shadow-[0_1px_4px_rgba(255,215,0,0.6)] animate-pulse"
-                style={{
-                  top: sp.top,
-                  left: sp.left,
-                  backgroundColor: sp.color,
-                  transform: `rotate(${sp.rot})`,
-                  opacity: 0.95
-                }}
-              />
-            ))}
-
-            {/* Glossy Reflection Highlight Arc */}
-            <div className="absolute top-[3px] left-[15px] right-[15px] h-[12px] bg-white/20 rounded-[50%] blur-[1px] pointer-events-none" />
-
-            {/* Swirling Whipped Cream Puffs with Glossy Red Cherries */}
-            {[
-              { top: "-4px", left: "18px" },
-              { top: "-9px", left: "76px" },
-              { top: "-4px", left: "134px" },
-              { top: "20px", left: "152px" },
-              { top: "34px", left: "80px" },
-              { top: "20px", left: "4px" },
-            ].map((c, i) => (
-              <div
-                key={i}
-                className="absolute w-5 h-5 rounded-full bg-gradient-to-br from-white via-pink-50 to-pink-100 shadow-md border-t border-white z-25 flex items-center justify-center"
-                style={{ top: c.top, left: c.left }}
-              >
-                {/* 3D Cherry on top with metallic reflection stem */}
-                <div className="relative w-3 h-3 rounded-full bg-gradient-to-tr from-[#7c0018] via-[#e61234] to-[#ffa4b3] border border-rose-900 shadow-sm flex items-center justify-center">
-                  <div className="absolute top-[1.5px] left-[2.5px] w-1 h-1 bg-white/80 rounded-full blur-[0.2px]" />
-                  {/* Cherry Stem */}
-                  <div className="absolute top-[-6px] left-[5px] w-[1px] h-5 bg-zinc-800 origin-bottom rotate-[15deg]" />
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Side Cylinder Body (Strawberry Red velvet) */}
-          <div className="w-[180px] h-[70px] mt-[-30px] bg-gradient-to-b from-[#ff3c69] via-[#cc2449] to-[#8c0a24] border-x border-white/10 relative z-10 overflow-hidden">
-            
-            {/* Glossy vertical reflection bar */}
-            <div className="absolute inset-y-0 left-[25%] w-8 bg-gradient-to-r from-transparent via-white/5 to-transparent pointer-events-none" />
-
-            {/* Delicious Strawberry Jam Glaze Drips running down the side */}
-            <div className="absolute top-0 inset-x-0 flex justify-between px-1">
-              {[12, 26, 16, 32, 14, 28, 20, 11, 24].map((h, i) => (
-                <div
-                  key={i}
-                  className="w-3 bg-gradient-to-b from-[#8c0a24] to-[#590011] rounded-b-full shadow-md border-b border-rose-900/45"
-                  style={{ height: `${h}px` }}
-                />
-              ))}
-            </div>
-
-            {/* Embedded white vanilla sponge cream swirl */}
-            <div className="absolute bottom-2 inset-x-0 h-2 bg-[#fffbf2] shadow-sm opacity-90 border-y border-[#dfd6be]" />
-          </div>
-
-          {/* TIER 1 (BOTTOM TIER) - RICH DARK CHOCOLATE WITH GOLD EMERALD DETAILS */}
-          {/* Top Oval Face */}
-          <div 
-            className="w-[260px] h-[70px] mt-[-35px] rounded-[50%] bg-gradient-to-tr from-[#2d1706] via-[#4d2d12] to-[#3a1f0a] border-t-2 border-white/20 shadow-[0_8px_40px_rgba(0,0,0,0.6)] relative z-0 flex items-center justify-center"
-            style={{ boxShadow: "inset 0 3px 8px rgba(255,255,255,0.15), 0 12px 40px rgba(0,0,0,0.5)" }}
-          >
-            {/* Shimmering gold leaf dust scattered on the chocolate tier */}
-            {[
-              { top: "15px", left: "35px", size: "3px" },
-              { top: "25px", left: "215px", size: "4px" },
-              { top: "35px", left: "185px", size: "3px" },
-              { top: "42px", left: "65px", size: "5px" },
-              { top: "18px", left: "140px", size: "3px" },
-            ].map((sp, i) => (
-              <div
-                key={i}
-                className="absolute bg-gradient-to-tr from-yellow-100 to-[#dfb256] rounded-full shadow-[0_0_5px_rgba(223,178,86,0.8)] animate-pulse"
-                style={{
-                  top: sp.top,
-                  left: sp.left,
-                  width: sp.size,
-                  height: sp.size,
-                  opacity: 0.9
-                }}
-              />
-            ))}
-          </div>
-
-          {/* Side Cylinder Body with Sponge & Dual Cream Layers */}
-          <div className="w-[260px] h-[95px] mt-[-35px] bg-gradient-to-b from-[#3a1f0a] via-[#211104] to-[#120901] border-x border-white/10 relative z-[-1] overflow-hidden flex items-center justify-center">
-            
-            {/* Glossy vertical reflection bar */}
-            <div className="absolute inset-y-0 left-[30%] w-12 bg-gradient-to-r from-transparent via-white/5 to-transparent pointer-events-none" />
-
-            {/* Thick Double Whipped Vanilla & Fudge Cream Layer in the middle */}
-            <div className="absolute top-[40px] inset-x-0 h-4 bg-[#fffcf5] border-y border-[#dfd6be] shadow-[0_0_12px_rgba(255,255,255,0.25)] z-10 flex justify-between px-6">
-              {[...Array(6)].map((_, i) => (
-                <div 
-                  key={i} 
-                  className="w-2.5 h-3 bg-[#120901] rounded-b-full shadow-inner border-b border-black/40" 
-                  style={{ transform: `translateY(${Math.sin(i) * 2.5}px)` }} 
-                />
-              ))}
-            </div>
-
-            {/* Luxurious Gold Signet Frame for the Turning Age */}
-            <div 
-              className="px-4 py-1.5 rounded-lg border-2 border-[#dfb256] bg-gradient-to-b from-[#211104]/90 to-[#120901]/90 z-20 mt-[-10px] shadow-[0_0_15px_rgba(223,178,86,0.25)] flex items-center justify-center flex-col min-w-[55px]"
-              style={{ transform: "translateY(-10px) translateZ(20px)" }}
+            {/* Glowing Golden Metallic text vectors */}
+            <text 
+              x="250" 
+              y="114" 
+              textAnchor="middle" 
+              fill="url(#goldGloss)" 
+              fontFamily="'Playfair Display', 'Georgia', serif" 
+              fontSize="23" 
+              fontWeight="900" 
+              fontStyle="italic"
+              letterSpacing="0.4"
             >
-              <span className="text-[6px] text-[#dfb256]/60 font-body uppercase tracking-[0.2em] font-bold">
-                Turning
-              </span>
-              <span
-                className="font-display font-black text-[#dfb256] tracking-wide text-3xl select-none leading-none mt-0.5"
-                style={{ filter: "drop-shadow(0 0 8px rgba(223,178,86,0.5))" }}
-              >
-                {turningAge}
-              </span>
-            </div>
-          </div>
-
-          {/* Base bottom curve */}
-          <div className="w-[260px] h-[55px] bg-gradient-to-b from-[#120901] to-[#040200] rounded-[50%] mt-[-28px] shadow-[0_15px_30px_rgba(0,0,0,0.85)] z-[-2]" />
-
-
-          {/* THE LUXURY CRYSTAL CAKE STAND / PLATTER */}
-          {/* Silver/Chrome Plate Top */}
-          <div className="w-[320px] h-[80px] bg-gradient-to-r from-zinc-100 via-zinc-300 to-zinc-100 rounded-[50%] mt-[-42px] border-t-2 border-white/60 shadow-[0_12px_32px_rgba(0,0,0,0.4)] z-[-3] flex items-center justify-center relative">
-            {/* Mirror circular ring reflections */}
-            <div className="w-[290px] h-[60px] rounded-[50%] border-t border-white/30" />
-            <div className="w-[245px] h-[48px] rounded-[50%] border border-zinc-400/25 absolute" />
+              Happy Birthday
+            </text>
             
-            {/* Soft ambient shadow cast by the cake tier on the plate */}
-            <div className="absolute inset-0 bg-black/45 rounded-[50%] scale-[0.84] filter blur-[6px] z-[-1]" />
-          </div>
+            <text 
+              x="250" 
+              y="138" 
+              textAnchor="middle" 
+              fill="url(#goldGloss)" 
+              fontFamily="'Playfair Display', 'Georgia', serif" 
+              fontSize="19" 
+              fontWeight="900" 
+              fontStyle="italic"
+              letterSpacing="1.2"
+            >
+              {FRIEND_NAME}
+            </text>
 
-          {/* Frosted Glass Stand Pedestal Leg */}
-          <div className="w-[80px] h-[50px] bg-gradient-to-b from-zinc-200 to-zinc-400/80 border-x border-white/20 mt-[-40px] z-[-4] rounded-b-xl shadow-inner relative flex items-center justify-center">
-            {/* Light specular highlight strip */}
-            <div className="absolute inset-y-0 left-1/4 w-3.5 bg-white/25 blur-[1.5px]" />
-          </div>
-          
-          {/* Stand Foot Base Platter */}
-          <div className="w-[150px] h-[38px] bg-gradient-to-r from-zinc-200 via-zinc-400 to-zinc-200 rounded-[50%] mt-[-20px] z-[-5] border-t border-white/30 shadow-2xl" />
-        </div>
+            {/* Glowing gold design swirls decoration */}
+            <path d="M165,122 Q250,135 335,122" fill="none" stroke="url(#goldGloss)" strokeWidth="1.5" strokeLinecap="round" opacity="0.85" />
+            <path d="M190,144 Q250,154 310,144" fill="none" stroke="url(#goldGloss)" strokeWidth="1.2" strokeLinecap="round" opacity="0.7" />
+          </g>
+
+        </svg>
       </motion.div>
 
       {/* Ceremony Interactive HUD Feedback */}
-      <div className="z-10 text-center min-h-[40px]">
+      <div className="z-10 text-center min-h-[40px] mt-2">
         <p className="font-body text-xs text-pink-300/40 uppercase tracking-widest">
           {allBlown ? "✨ Celestial Wish Mode Activated ✨" : "Click candles or enable mic to blow them out"}
         </p>
