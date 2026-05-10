@@ -13,17 +13,17 @@ const LETTER_LINES = [
   { text: `I never want to lose you. I hope you know that. I hope you carry it with you, especially on the days when the world feels heavy.`, style: "body" },
   { text: `Happy Birthday. 🎂 Here's to every year ahead — may they be as beautiful as you are.`, style: "closing" },
   { text: `With all my love,`, style: "sign-pre" },
-  { text: `Your best friend 💙`, style: "signature" },
+  { text: `Your SATHWIII 💙`, style: "signature" },
 ];
 
 /* ─── Cute sticker decorations on the letter ─── */
 const STICKERS = [
-  { emoji: "🌸", top: "4%",   left: "3%",  rotate: -12, scale: 1.4 },
-  { emoji: "✨", top: "6%",   right: "5%", rotate: 8,   scale: 1.1 },
-  { emoji: "🦋", top: "22%",  right: "2%", rotate: -5,  scale: 1.2 },
-  { emoji: "💌", bottom: "8%",left: "4%",  rotate: 10,  scale: 1.3 },
-  { emoji: "⭐", bottom: "5%",right: "4%", rotate: -8,  scale: 1.1 },
-  { emoji: "🌙", top: "48%",  left: "1%",  rotate: 5,   scale: 1.0 },
+  { emoji: "🌸", top: "4%", left: "3%", rotate: -12, scale: 1.4 },
+  { emoji: "✨", top: "6%", right: "5%", rotate: 8, scale: 1.1 },
+  { emoji: "🦋", top: "22%", right: "2%", rotate: -5, scale: 1.2 },
+  { emoji: "💌", bottom: "8%", left: "4%", rotate: 10, scale: 1.3 },
+  { emoji: "⭐", bottom: "5%", right: "4%", rotate: -8, scale: 1.1 },
+  { emoji: "🌙", top: "48%", left: "1%", rotate: 5, scale: 1.0 },
 ];
 
 /* ─── Typewriter hook ─── */
@@ -57,11 +57,11 @@ const LetterLine = ({
   }, [done, active, onDone, line.style]);
 
   const cls = {
-    salutation:  "font-[cursive] text-3xl md:text-4xl mb-8 text-[#c4785c] font-bold",
-    body:        "font-[cursive] text-xl md:text-2xl leading-relaxed mb-7 text-[#3d2b1f]",
-    closing:     "font-[cursive] text-xl md:text-2xl mb-4 text-[#3d2b1f] italic",
-    "sign-pre":  "font-[cursive] text-lg text-[#6b4f3f] mb-2",
-    signature:   "font-[cursive] text-3xl md:text-4xl text-[#c4785c] mt-2 font-bold",
+    salutation: "font-[cursive] text-3xl md:text-4xl mb-8 text-[#c4785c] font-bold",
+    body: "font-[cursive] text-xl md:text-2xl leading-relaxed mb-7 text-[#3d2b1f]",
+    closing: "font-[cursive] text-xl md:text-2xl mb-4 text-[#3d2b1f] italic",
+    "sign-pre": "font-[cursive] text-lg text-[#6b4f3f] mb-2",
+    signature: "font-[cursive] text-3xl md:text-4xl text-[#c4785c] mt-2 font-bold",
   }[line.style] ?? "font-[cursive] text-xl text-[#3d2b1f]";
 
   // Render once started — never disappear
@@ -269,7 +269,7 @@ const HandwrittenLetter = () => {
             </motion.p>
 
             {/* Floating hearts around envelope */}
-            {["💕","🌸","✨","💫"].map((e, i) => (
+            {["💕", "🌸", "✨", "💫"].map((e, i) => (
               <motion.span
                 key={i}
                 className="absolute pointer-events-none"
