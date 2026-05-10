@@ -42,24 +42,6 @@ const CHAT_DATA: ChatCard[] = [
   },
   {
     id: 4,
-    src: "/Screenshot_2026-05-10-02-23-33-42_be80aec1db9a2b53c9d399db0c602181.jpg",
-    title: "Comfort & Trust 🔐",
-    subtitle: "Sharing the raw truths",
-    hint: "Sharing those tiny secrets and silly thoughts that we wouldn't dare tell anyone else.",
-    era: "Mid 2021",
-    comment: "This was around when we started sharing our rawest thoughts. The feeling of knowing someone actually listens and understands you without an ounce of judgment is so rare."
-  },
-  {
-    id: 5,
-    src: "/Screenshot_2026-05-10-02-24-35-77_be80aec1db9a2b53c9d399db0c602181.jpg",
-    title: "Pure High-Key Drama 🎭",
-    subtitle: "Who was more dramatic?",
-    hint: "Look at the intensity here! We were literally the most dramatic duo in existence.",
-    era: "Mid 2021",
-    comment: "We were literally the most dramatic duo to ever walk the earth! I love how we can match each other's crazy energy so effortlessly."
-  },
-  {
-    id: 6,
     src: "/Screenshot_2026-05-10-02-25-41-97_be80aec1db9a2b53c9d399db0c602181.jpg",
     title: "Your Guiding Compass 🧭",
     subtitle: "How you always look out for me",
@@ -68,16 +50,16 @@ const CHAT_DATA: ChatCard[] = [
     comment: "edhu nenapu ediya da we saying this before saying good night"
   },
   {
-    id: 7,
+    id: 5,
     src: "/Screenshot_2026-05-10-02-28-00-01_be80aec1db9a2b53c9d399db0c602181.jpg",
     title: "Holographic Heart-To-Heart 💖",
     subtitle: "Deep emotional waves",
     hint: "This conversation was a turning point. Real, unfiltered, beautiful honesty between us.",
     era: "Late 2021",
-    comment: "edhu mostly ninu hostel odaglo or nanu hostel ge odaga ansuthe illa ninu cet ge antha 25 days hostel ogidhe aga ansuthe 'nanu imagination nali ninge jothe math adtha edidu'"
+    comment: "edhu mostly ninu hostel odaglo or nanu hostel ge ogida ansuthe illa ninu cet ge antha 25 days hostel ogidhe aga ansuthe 'nanu imagination nali ninge jothe math adtha edidu'"
   },
   {
-    id: 8,
+    id: 6,
     src: "/Screenshot_2026-05-10-02-36-44-14_be80aec1db9a2b53c9d399db0c602181.jpg",
     title: "The Cosmic Vibe Check 🌌",
     subtitle: "Late night reflections",
@@ -86,7 +68,7 @@ const CHAT_DATA: ChatCard[] = [
     comment: "why we are missing each other so much mostly some is going to hostel i guess"
   },
   {
-    id: 9,
+    id: 7,
     src: "/Screenshot_2026-05-10-02-38-39-62_be80aec1db9a2b53c9d399db0c602181.jpg",
     title: "Safety Net 🤝",
     subtitle: "Zero judgment zone",
@@ -95,7 +77,7 @@ const CHAT_DATA: ChatCard[] = [
     comment: "nenap ediya aga ninge reels and memes na inge screenshot kalstidhe."
   },
   {
-    id: 10,
+    id: 8,
     src: "/Screenshot_2026-05-10-02-41-26-72_be80aec1db9a2b53c9d399db0c602181.jpg",
     title: "The Happiest Triggers ✨",
     subtitle: "A ping that changed the day",
@@ -104,7 +86,7 @@ const CHAT_DATA: ChatCard[] = [
     comment: "yenu nange da antha kariyaalvaaaaaaaa haaaa"
   },
   {
-    id: 11,
+    id: 9,
     src: "/Screenshot_2026-05-10-02-47-47-79_be80aec1db9a2b53c9d399db0c602181.jpg",
     title: "Inside Jokes Archive 📂",
     subtitle: "The language only we speak",
@@ -113,7 +95,7 @@ const CHAT_DATA: ChatCard[] = [
     comment: "edhur bagge nanu enu mathadala ."
   },
   {
-    id: 12,
+    id: 10,
     src: "/Screenshot_2026-05-10-02-48-14-88_be80aec1db9a2b53c9d399db0c602181.jpg",
     title: "A Gentle Anchor 🌸",
     subtitle: "Warmth when it got cold",
@@ -122,7 +104,7 @@ const CHAT_DATA: ChatCard[] = [
     comment: "nanu 10th nali nan prantes bandaga nanu ninma appa accound nali yastu msg madidhe gotha reply ne barthairla 10th mugsi manege bandaglu yastu msg madidini gotha mostly sai angels ge join agidhu babu chikkapa helirlila andire msg he madthairlila ansuthe  "
   },
   {
-    id: 13,
+    id: 11,
     src: "/Screenshot_2026-05-10-02-48-42-07_be80aec1db9a2b53c9d399db0c602181.jpg",
     title: "Silly Text Fight 🥊",
     subtitle: "Playful arguments",
@@ -131,16 +113,7 @@ const CHAT_DATA: ChatCard[] = [
     comment: "ALVAAAA"
   },
   {
-    id: 14,
-    src: "/Screenshot_2026-05-10-02-49-54-11_be80aec1db9a2b53c9d399db0c602181.jpg",
-    title: "Irreplaceable Bond 💎",
-    subtitle: "The rare kind of support",
-    hint: "Confirming that we are each other's ultimate trust baseline. This means the absolute world.",
-    era: "Late 2021",
-    comment: "There's a level of trust between us that takes lifetimes to build. I trust you blindly, and that is something I hold incredibly close to my heart."
-  },
-  {
-    id: 15,
+    id: 12,
     src: "/Screenshot_2026-05-10-02-55-04-22_be80aec1db9a2b53c9d399db0c602181.jpg",
     title: "Vintage Text Flow 🧪",
     subtitle: "Early years charm",
@@ -149,7 +122,7 @@ const CHAT_DATA: ChatCard[] = [
     comment: "nam appa ninu na hostel warden ge inge kelidru nan sose elle odidhu hostel nali edlu antha   "
   },
   {
-    id: 16,
+    id: 13,
     src: "/Screenshot_2026-05-10-03-06-09-78_be80aec1db9a2b53c9d399db0c602181.jpg",
     title: "Midnight Philosophical Debates 🛸",
     subtitle: "Two weirdos talking",
@@ -158,7 +131,7 @@ const CHAT_DATA: ChatCard[] = [
     comment: "edglu aste ninuna nenep madale iro dinane ila andko ega onthu ninge baiyoke andru nenp madkoltha irthini "
   },
   {
-    id: 17,
+    id: 14,
     src: "/Screenshot_2026-05-10-03-06-28-70_be80aec1db9a2b53c9d399db0c602181.jpg",
     title: "Our Quiet Sanctuary 🌍",
     subtitle: "Away from the chaos",
@@ -167,7 +140,7 @@ const CHAT_DATA: ChatCard[] = [
     comment: "I wish I could get all those days back. "
   },
   {
-    id: 18,
+    id: 15,
     src: "/Screenshot_2026-05-10-03-16-26-95_be80aec1db9a2b53c9d399db0c602181.jpg",
     title: "Sweeter Than Cake 🍰",
     subtitle: "Your infinite kindness",
@@ -176,16 +149,7 @@ const CHAT_DATA: ChatCard[] = [
     comment: "edhu nenp ediya edhu iroke chance he illa nange nenpirlila acttually navu ebru 1st Friendship Anniversary celebarate madidvii chat nale cake cut madidvi date nenp madko nodana (26rd july 2021)"
   },
   {
-    id: 19,
-    src: "/Screenshot_2026-05-10-03-17-16-19_be80aec1db9a2b53c9d399db0c602181.jpg",
-    title: "Wheezing-Laughter Memories 😸",
-    subtitle: "The ultimate wheeze",
-    hint: "I still chuckle out loud thinking about how silly this joke was. Some things never age.",
-    era: "Late 2021",
-    comment: "I can literally hear our wheezing laughs in this chat log! Some jokes we have are so silly but they are forever etched in my memory."
-  },
-  {
-    id: 20,
+    id: 16,
     src: "/Screenshot_2026-05-10-03-26-53-15_be80aec1db9a2b53c9d399db0c602181.jpg",
     title: "Celestial Sync 💫",
     subtitle: "Two stars in the same orbit",
@@ -194,7 +158,7 @@ const CHAT_DATA: ChatCard[] = [
     comment: "edhu en gotha nanu ninge prabhu antha karitha edhe PRABHU HELIDUNA MIRODU UNTHEE antha dailog heltah edhe nenp aythaaa"
   },
   {
-    id: 21,
+    id: 17,
     src: "/Screenshot_2026-05-10-03-35-55-70_be80aec1db9a2b53c9d399db0c602181.jpg",
     title: "The Nostalgia Box 📦",
     subtitle: "Five full years of laughter",
@@ -203,7 +167,7 @@ const CHAT_DATA: ChatCard[] = [
     comment: "edhuna read madidre literally aga yastu kushi angitho eglu aste kushi aguthe it never gets old and edhuna nodidre egalu adhe scence kanmudhe baruthe gotha  "
   },
   {
-    id: 22,
+    id: 18,
     src: "/Screenshot_2026-05-10-03-35-58-36_be80aec1db9a2b53c9d399db0c602181.jpg",
     title: "Our Legacy Archive 👑",
     subtitle: "To forever and beyond",
