@@ -7,7 +7,7 @@ export const FRIEND_NAME = "Priyanka";
 export const BIRTHDAY = new Date("2003-05-12");
 
 // ✏️ UPDATE THIS: When did you two become friends?
-export const FRIENDSHIP_START = new Date("2021-01-15");
+export const FRIENDSHIP_START = new Date("2020-07-26");
 
 /** Calculate current age */
 export function getAge(): number {

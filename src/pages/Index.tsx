@@ -25,6 +25,7 @@ import HandwrittenLetter from "@/components/HandwrittenLetter";
 import DarkModeToggle from "@/components/DarkModeToggle";
 import MusicPlayer from "@/components/MusicPlayer";
 import VirtualHug from "@/components/VirtualHug";
+import ChatVault from "@/components/ChatVault";
 import { FRIEND_NAME } from "@/config/priyanka";
 
 const sections = [
@@ -32,6 +33,7 @@ const sections = [
   { id: "counter",  component: <FriendshipCounter /> },
   { id: "cake", component: <BirthdayCake /> },
   { id: "timeline", component: <FriendshipTimeline /> },
+  { id: "chat-vault", component: <ChatVault /> },
   { id: "polaroids", component: <PolaroidRain /> },
   { id: "letter", component: <HandwrittenLetter /> },
 ];
@@ -132,6 +134,9 @@ const Index = () => {
     }
   };
 
+  const touchStartXRef = useRef(0);
+  const touchEndXRef = useRef(0);
+
   useEffect(() => {
     if (!entered) return;
 
@@ -153,12 +158,40 @@ const Index = () => {
       }
     };
 
+    const handleTouchStart = (e: TouchEvent) => {
+      if ((e.target as HTMLElement).closest('.no-page-swipe')) return;
+      touchStartXRef.current = e.touches[0].clientX;
+      touchEndXRef.current = e.touches[0].clientX;
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if ((e.target as HTMLElement).closest('.no-page-swipe')) return;
+      touchEndXRef.current = e.touches[0].clientX;
+    };
+
+    const handleTouchEnd = () => {
+      const diff = touchStartXRef.current - touchEndXRef.current;
+      // Require more than 60px swipe distance to change chapters
+      if (diff > 60) {
+        goNext();
+      } else if (diff < -60) {
+        goPrev();
+      }
+    };
+
     // Passive false allows preventDefault for spacebar
     window.addEventListener("wheel", handleWheel, { passive: true });
     window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("touchstart", handleTouchStart, { passive: true });
+    window.addEventListener("touchmove", handleTouchMove, { passive: true });
+    window.addEventListener("touchend", handleTouchEnd, { passive: true });
+
     return () => {
       window.removeEventListener("wheel", handleWheel);
       window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("touchend", handleTouchEnd);
     };
   }, [entered, currentSection]);
 

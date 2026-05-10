@@ -212,7 +212,7 @@ const PolaroidRain = () => (
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
     >
-      <p className="chapter-label justify-center mb-3" style={{ color: "var(--nc-tertiary)" }}>✦ Chapter V</p>
+      <p className="chapter-label justify-center mb-3" style={{ color: "var(--nc-tertiary)" }}>✦ Chapter VI</p>
       <h2 className="font-display font-black text-white" style={{ fontSize: "var(--t-5xl)", letterSpacing: "-0.01em" }}>
         Memory Reels 📹
       </h2>

@@ -151,7 +151,7 @@ const HandwrittenLetter = () => {
           WebkitTextFillColor: "transparent",
           backgroundClip: "text",
         }}>
-          Chapter VI — The Letter
+          Chapter VII — The Letter
         </h2>
       </motion.div>
 

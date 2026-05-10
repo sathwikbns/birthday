@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FRIEND_NAME } from "@/config/priyanka";
 
@@ -51,6 +51,30 @@ const TIMELINE_MEMORIES = [
 const FriendshipTimeline = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [zoomPhoto, setZoomPhoto] = useState<string | null>(null);
+
+  // Touch Swiping Gestures for Mobile
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.targetTouches[0].clientX;
+    touchEndX.current = e.targetTouches[0].clientX; // reset to avoid accidental drift clicks
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    const diff = touchStartX.current - touchEndX.current;
+    if (diff > 55) {
+      // Swipe left -> next
+      nextMemory();
+    } else if (diff < -55) {
+      // Swipe right -> prev
+      prevMemory();
+    }
+  };
 
   const nextMemory = () => {
     if (currentIndex < TIMELINE_MEMORIES.length - 1) {
@@ -105,14 +129,14 @@ const FriendshipTimeline = () => {
         Story Journal 📖
       </motion.h2>
 
-      {/* Cinematic Split Layout Frame */}
-      <div className="relative w-full max-w-5xl flex items-center justify-center z-10 min-h-[460px]">
+      {/* Cinematic Split Layout Frame with safe padding for arrows */}
+      <div className="relative w-full max-w-5xl flex items-center justify-center z-10 min-h-[460px] px-2 md:px-10">
         
-        {/* Navigation Arrow — Left */}
+        {/* Navigation Arrow — Left (Responsive positioning so it stays inside margins on small screens) */}
         <button 
           onClick={prevMemory}
           disabled={currentIndex === 0}
-          className="absolute left-[-20px] md:left-[-35px] z-20 w-12 h-12 rounded-full flex items-center justify-center bg-[#120f23]/60 border border-white/10 text-white/70 disabled:opacity-10 transition-all duration-200 cursor-pointer hover:bg-white/10 hover:border-white/20 hover:text-white"
+          className="absolute left-1 md:-left-4 z-20 w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center bg-[#120f23]/80 border border-white/15 text-white/80 disabled:opacity-20 transition-all duration-200 cursor-pointer hover:bg-white/10 hover:border-white/20 hover:text-white"
           aria-label="Previous memory"
         >
           <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -120,11 +144,11 @@ const FriendshipTimeline = () => {
           </svg>
         </button>
 
-        {/* Navigation Arrow — Right */}
+        {/* Navigation Arrow — Right (Responsive positioning) */}
         <button 
           onClick={nextMemory}
           disabled={currentIndex === TIMELINE_MEMORIES.length - 1}
-          className="absolute right-[-20px] md:right-[-35px] z-20 w-12 h-12 rounded-full flex items-center justify-center bg-[#120f23]/60 border border-white/10 text-white/70 disabled:opacity-10 transition-all duration-200 cursor-pointer hover:bg-white/10 hover:border-white/20 hover:text-white"
+          className="absolute right-1 md:-right-4 z-20 w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center bg-[#120f23]/80 border border-white/15 text-white/80 disabled:opacity-20 transition-all duration-200 cursor-pointer hover:bg-white/10 hover:border-white/20 hover:text-white"
           aria-label="Next memory"
         >
           <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -133,7 +157,12 @@ const FriendshipTimeline = () => {
         </button>
 
         {/* Main Content Card — Responsive Grid Split */}
-        <div className="w-full h-full p-4 md:p-8 rounded-[2rem] bg-[#120f22]/40 border border-white/5 backdrop-blur-xl shadow-2xl">
+        <div 
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          className="w-full h-full p-4 md:p-8 rounded-[2rem] bg-[#120f22]/40 border border-white/5 backdrop-blur-xl shadow-2xl overflow-hidden"
+        >
           <AnimatePresence mode="wait">
             <motion.div
               key={currentIndex}
