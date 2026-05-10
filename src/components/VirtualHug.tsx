@@ -4,27 +4,91 @@ import { FRIEND_NAME } from "@/config/priyanka";
 
 const VirtualHug = () => {
   const [hugging, setHugging] = useState(false);
+  const [huggedOnce, setHuggedOnce] = useState(false);
 
   const triggerHug = () => {
     if (hugging) return;
     setHugging(true);
+    setHuggedOnce(true);
     // Let the hug linger for a realistic amount of time (5 seconds)
     setTimeout(() => setHugging(false), 5000); 
   };
 
   return (
     <>
-      <motion.button
-        className="fixed bottom-6 left-6 z-40 bg-pink-500/20 hover:bg-pink-500/40 text-pink-200 rounded-full w-16 h-16 flex items-center justify-center shadow-[0_0_20px_rgba(236,72,153,0.3)] border border-pink-400/50 backdrop-blur-md"
-        whileHover={{ scale: 1.15, rotate: -10 }}
-        whileTap={{ scale: 0.9 }}
-        animate={{ y: [0, -8, 0], boxShadow: ["0 0 10px rgba(236,72,153,0.2)", "0 0 30px rgba(236,72,153,0.6)", "0 0 10px rgba(236,72,153,0.2)"] }}
-        transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-        onClick={triggerHug}
-        title="Send a Virtual Hug 🤗"
-      >
-        <span className="text-3xl drop-shadow-lg">🤗</span>
-      </motion.button>
+      {/* Positioned on the bottom-left so it mirrors the bottom-right MusicPlayer perfectly */}
+      <div className="fixed bottom-6 left-6 z-40 flex flex-col items-start gap-3 select-none">
+        
+        {/* Dynamic Attraction Nudge Tooltip for Virtual Hug */}
+        <AnimatePresence>
+          {!huggedOnce && (
+            <motion.div
+              className="px-4 py-2.5 rounded-2xl border flex items-center gap-2.5 max-w-[240px] relative pointer-events-none"
+              style={{
+                background: "rgba(18, 14, 32, 0.9)",
+                backdropFilter: "blur(12px)",
+                WebkitBackdropFilter: "blur(12px)",
+                borderColor: "rgba(236, 72, 153, 0.35)",
+                boxShadow: "0 8px 32px rgba(236, 72, 153, 0.15), inset 0 0 10px rgba(255,255,255,0.01)"
+              }}
+              initial={{ opacity: 0, scale: 0.85, y: 15 }}
+              animate={{ 
+                opacity: 1, 
+                scale: 1, 
+                y: [0, -6, 0] 
+              }}
+              exit={{ opacity: 0, scale: 0.85, y: 15 }}
+              transition={{ 
+                y: { repeat: Infinity, duration: 2.5, ease: "easeInOut", delay: 0.5 },
+                default: { type: "spring", stiffness: 200, damping: 20 }
+              }}
+            >
+              <div className="flex-shrink-0 w-2 h-2 rounded-full bg-pink-400 animate-ping" />
+              <div className="flex flex-col text-left">
+                <span className="text-[7px] font-body font-black uppercase tracking-[0.15em] text-pink-400">
+                  Feel the Warmth
+                </span>
+                <span className="text-[10px] font-body text-white/95 leading-tight mt-0.5">
+                  Tap here to send her the biggest virtual hug! 🤗
+                </span>
+              </div>
+              
+              {/* Tooltip little beak pointing down to hug button */}
+              <div className="absolute bottom-[-6px] left-6 w-3 h-3 rotate-45 border-r border-b" 
+                style={{
+                  background: "rgba(18, 14, 32, 0.9)",
+                  borderColor: "rgba(236, 72, 153, 0.35)"
+                }}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <div className="relative">
+          {/* Glowing Attraction Sonar Ring */}
+          {!huggedOnce && (
+            <div className="absolute inset-[-6px] rounded-full pointer-events-none z-0">
+              <motion.div
+                className="absolute inset-0 rounded-full border border-pink-400/40"
+                animate={{ scale: [1, 1.6], opacity: [0.7, 0] }}
+                transition={{ duration: 2.2, repeat: Infinity, ease: "easeOut" }}
+              />
+            </div>
+          )}
+
+          <motion.button
+            className="bg-pink-500/20 hover:bg-pink-500/40 text-pink-200 rounded-full w-14 h-14 flex items-center justify-center shadow-[0_0_20px_rgba(236,72,153,0.3)] border border-pink-400/50 backdrop-blur-md relative z-10 cursor-pointer"
+            whileHover={{ scale: 1.12, rotate: -8 }}
+            whileTap={{ scale: 0.92 }}
+            animate={{ y: [0, -4, 0] }}
+            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+            onClick={triggerHug}
+            title="Send a Virtual Hug 🤗"
+          >
+            <span className="text-2xl drop-shadow-lg select-none">🤗</span>
+          </motion.button>
+        </div>
+      </div>
 
       <AnimatePresence>
         {hugging && (

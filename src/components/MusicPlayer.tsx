@@ -200,6 +200,51 @@ const MusicPlayer = () => {
           )}
         </AnimatePresence>
 
+        {/* Dynamic Attraction Nudge Tooltip for Music */}
+        <AnimatePresence>
+          {!playing && (
+            <motion.div
+              className="px-4 py-2.5 rounded-2xl border flex items-center gap-2.5 max-w-[240px] relative pointer-events-none"
+              style={{
+                background: "rgba(18, 14, 32, 0.9)",
+                backdropFilter: "blur(12px)",
+                WebkitBackdropFilter: "blur(12px)",
+                borderColor: "rgba(255, 180, 166, 0.35)",
+                boxShadow: "0 8px 32px rgba(255, 180, 166, 0.15), inset 0 0 10px rgba(255,255,255,0.01)"
+              }}
+              initial={{ opacity: 0, scale: 0.85, y: 15 }}
+              animate={{ 
+                opacity: 1, 
+                scale: 1, 
+                y: [0, -6, 0] 
+              }}
+              exit={{ opacity: 0, scale: 0.85, y: 15 }}
+              transition={{ 
+                y: { repeat: Infinity, duration: 2.5, ease: "easeInOut" },
+                default: { type: "spring", stiffness: 200, damping: 20 }
+              }}
+            >
+              <div className="flex-shrink-0 w-2 h-2 rounded-full bg-[#ffb4a6] animate-ping" />
+              <div className="flex flex-col text-left">
+                <span className="text-[7px] font-body font-black uppercase tracking-[0.15em] text-[#ffb4a6]">
+                  Attraction Nudge
+                </span>
+                <span className="text-[10px] font-body text-white/95 leading-tight mt-0.5">
+                  Tap play to listen to her favorite song! 🎵
+                </span>
+              </div>
+              
+              {/* Tooltip little beak pointing down to play button */}
+              <div className="absolute bottom-[-6px] right-6 w-3 h-3 rotate-45 border-r border-b" 
+                style={{
+                  background: "rgba(18, 14, 32, 0.9)",
+                  borderColor: "rgba(255, 180, 166, 0.35)"
+                }}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Media Controller Box */}
         <div className="flex items-center gap-3">
           
@@ -254,6 +299,17 @@ const MusicPlayer = () => {
                 </div>
               )}
             </AnimatePresence>
+
+            {/* Glowing Attraction Sonar Ring */}
+            {!playing && (
+              <div className="absolute inset-[-6px] rounded-full pointer-events-none z-0">
+                <motion.div
+                  className="absolute inset-0 rounded-full border border-[#ffb4a6]/40"
+                  animate={{ scale: [1, 1.6], opacity: [0.7, 0] }}
+                  transition={{ duration: 2.2, repeat: Infinity, ease: "easeOut" }}
+                />
+              </div>
+            )}
 
             <motion.button
               onClick={toggle}
