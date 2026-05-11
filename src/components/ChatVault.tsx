@@ -241,6 +241,22 @@ const ChatVault = () => {
     }
   };
 
+  const goNextChat = () => {
+    if (currentIdx < CHAT_DATA.length - 1) {
+      setDirection(1);
+      setCurrentIdx((prev) => prev + 1);
+      playSound("swipe");
+    }
+  };
+
+  const goPrevChat = () => {
+    if (currentIdx > 0) {
+      setDirection(-1);
+      setCurrentIdx((prev) => prev - 1);
+      playSound("swipe");
+    }
+  };
+
   // Keyboard controls for Arrow keys & Escape
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -249,18 +265,10 @@ const ChatVault = () => {
         playSound("click");
       }
       if (e.key === "ArrowRight") {
-        if (currentIdx < CHAT_DATA.length - 1) {
-          setDirection(1);
-          setCurrentIdx((i) => i + 1);
-          playSound("swipe");
-        }
+        goNextChat();
       }
       if (e.key === "ArrowLeft") {
-        if (currentIdx > 0) {
-          setDirection(-1);
-          setCurrentIdx((i) => i - 1);
-          playSound("swipe");
-        }
+        goPrevChat();
       }
     };
     window.addEventListener("keydown", handleKeyDown);
@@ -923,6 +931,27 @@ const ChatVault = () => {
               transition={{ type: "spring", bounce: 0.2 }}
               onClick={(e) => e.stopPropagation()}
             >
+              {/* Desktop Side Arrows floating outside/inside container boundaries */}
+              {currentIdx > 0 && (
+                <button
+                  onClick={goPrevChat}
+                  className="absolute -left-16 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full hidden md:flex items-center justify-center bg-black/60 hover:bg-black/80 border border-white/10 text-white hover:border-pink-500/50 transition-all duration-200 shadow-[0_4px_20px_rgba(236,72,153,0.15)] active:scale-90 cursor-pointer z-50 select-none"
+                  aria-label="Previous memory"
+                >
+                  <span className="text-xl">←</span>
+                </button>
+              )}
+
+              {currentIdx < CHAT_DATA.length - 1 && (
+                <button
+                  onClick={goNextChat}
+                  className="absolute -right-16 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full hidden md:flex items-center justify-center bg-black/60 hover:bg-black/80 border border-white/10 text-white hover:border-pink-500/50 transition-all duration-200 shadow-[0_4px_20px_rgba(236,72,153,0.15)] active:scale-90 cursor-pointer z-50 select-none"
+                  aria-label="Next memory"
+                >
+                  <span className="text-xl">→</span>
+                </button>
+              )}
+
               {/* Left Side: Screenshot Container */}
               <div
                 className="w-full md:w-1/2 rounded-2xl overflow-hidden flex items-center justify-center bg-black/40 relative p-1 cursor-default select-none max-h-[45vh] md:max-h-[80vh]"
@@ -981,9 +1010,30 @@ const ChatVault = () => {
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-1.5 border-t border-white/5 pt-4 mt-2">
-                  <p className="font-body text-[9px] md:text-[10px] text-pink-300/40 uppercase tracking-widest select-none">
-                    ✦ Tap outside this box to exit full-screen ✦
+                {/* Mobile Friendly Navigation Row */}
+                <div className="flex items-center justify-between border-t border-white/5 pt-4 mt-2 select-none gap-4">
+                  <button
+                    onClick={goPrevChat}
+                    disabled={currentIdx === 0}
+                    className="flex-1 py-2.5 px-4 rounded-xl font-body text-xs font-semibold uppercase tracking-wider text-center border border-white/10 text-pink-200/80 hover:bg-white/5 disabled:opacity-25 active:scale-[0.98] transition-all cursor-pointer"
+                  >
+                    ← Prev
+                  </button>
+                  <span className="font-body text-xs text-pink-300/40 font-bold px-1 whitespace-nowrap">
+                    {currentIdx + 1} / {CHAT_DATA.length}
+                  </span>
+                  <button
+                    onClick={goNextChat}
+                    disabled={currentIdx === CHAT_DATA.length - 1}
+                    className="flex-1 py-2.5 px-4 rounded-xl font-body text-xs font-semibold uppercase tracking-wider text-center bg-pink-500/10 border border-pink-500/20 text-pink-300 hover:bg-pink-500/20 disabled:opacity-25 active:scale-[0.98] transition-all cursor-pointer"
+                  >
+                    Next →
+                  </button>
+                </div>
+
+                <div className="text-center mt-3 select-none">
+                  <p className="font-body text-[9px] text-pink-300/30 uppercase tracking-widest">
+                    ✦ Press Arrow Keys to navigate, tap outside to exit ✦
                   </p>
                 </div>
               </div>

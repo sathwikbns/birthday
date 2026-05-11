@@ -86,6 +86,8 @@ const Index = () => {
   const [currentSection, setCurrentSection] = useState(0);
   const [direction, setDirection] = useState(1);
   const isAnimatingRef = useRef(false);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [canScrollDown, setCanScrollDown] = useState(false);
 
   useEffect(() => {
     if (dark) {
@@ -137,10 +139,70 @@ const Index = () => {
   const touchStartXRef = useRef(0);
   const touchEndXRef = useRef(0);
 
+  const handleScroll = () => {
+    const container = scrollContainerRef.current;
+    if (container) {
+      const { scrollTop, scrollHeight, clientHeight } = container;
+      // Show scroll button if there is scrollable content and we haven't scrolled to the bottom
+      setCanScrollDown(scrollHeight > clientHeight + 10 && scrollTop < scrollHeight - clientHeight - 30);
+    } else {
+      setCanScrollDown(false);
+    }
+  };
+
+  const scrollDown = () => {
+    const container = scrollContainerRef.current;
+    if (container) {
+      container.scrollBy({
+        top: window.innerHeight * 0.7,
+        behavior: "smooth"
+      });
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("resize", handleScroll);
+    return () => window.removeEventListener("resize", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    // Reset scroll position of the container
+    const container = scrollContainerRef.current;
+    if (container) {
+      container.scrollTop = 0;
+    }
+    // Small timeout to allow the new section to render and calculate its scroll height
+    const timer = setTimeout(() => {
+      handleScroll();
+    }, 150);
+    return () => clearTimeout(timer);
+  }, [currentSection, entered]);
+
   useEffect(() => {
     if (!entered) return;
 
     const handleWheel = (e: WheelEvent) => {
+      // If we are inside an element with 'no-page-swipe' class (like the Chat Capsule), prevent transition
+      if ((e.target as HTMLElement).closest('.no-page-swipe')) return;
+
+      const container = scrollContainerRef.current;
+      if (container) {
+        const { scrollTop, scrollHeight, clientHeight } = container;
+        const isScrollable = scrollHeight > clientHeight;
+
+        if (isScrollable) {
+          if (e.deltaY > 0) {
+            // Scrolling down — only transition if we are at the very bottom
+            const isAtBottom = scrollTop + clientHeight >= scrollHeight - 2;
+            if (!isAtBottom) return;
+          } else {
+            // Scrolling up — only transition if we are at the very top
+            const isAtTop = scrollTop <= 2;
+            if (!isAtTop) return;
+          }
+        }
+      }
+
       // Prevent rapid scroll spam
       if (Math.abs(e.deltaY) < 30) return;
       if (e.deltaY > 0) goNext();
@@ -148,7 +210,10 @@ const Index = () => {
     };
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "ArrowDown" || e.key === "ArrowRight" || e.key === " ") {
+      const activeEl = document.activeElement;
+      if (activeEl && (activeEl.tagName === "INPUT" || activeEl.tagName === "TEXTAREA")) return;
+
+      if (e.key === "ArrowDown" || e.key === "ArrowRight") {
         e.preventDefault();
         goNext();
       }
@@ -179,7 +244,7 @@ const Index = () => {
       }
     };
 
-    // Passive false allows preventDefault for spacebar
+    // Passive false allows preventDefault for key listeners and scrolling
     window.addEventListener("wheel", handleWheel, { passive: true });
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("touchstart", handleTouchStart, { passive: true });
@@ -349,6 +414,8 @@ const Index = () => {
           <AnimatePresence custom={direction} mode="sync">
             <motion.div
               key={currentSection}
+              ref={scrollContainerRef}
+              onScroll={handleScroll}
               custom={direction}
               variants={bookVariants}
               initial="enter"
@@ -356,119 +423,128 @@ const Index = () => {
               exit="exit"
               className="absolute inset-0 overflow-y-auto overflow-x-hidden [transform-style:preserve-3d]"
             >
-              <div className="min-h-full flex flex-col justify-between items-center py-16 px-4 md:px-8 max-w-6xl mx-auto">
+              <div className="min-h-full flex flex-col justify-between items-center pt-16 pb-32 px-4 md:px-8 max-w-6xl mx-auto">
                 {/* Section content — clean, full-bleed container with no bounding box */}
                 <div className="w-full">
                   {sections[currentSection].component}
                 </div>
 
-                {/* ── Film-strip navigation (Nocturne Cinema) ── */}
-                <div className="mt-10 mb-4 w-full flex flex-col items-center justify-center">
-                  <div
-                    className="flex items-center gap-4 px-6 py-3 rounded-full"
-                    style={{
-                      background: 'var(--glass-bg)',
-                      backdropFilter: 'var(--glass-blur)',
-                      WebkitBackdropFilter: 'var(--glass-blur)',
-                      border: '1px solid var(--nc-outline)',
-                      boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
-                    }}
+                {/* Last page footer credit */}
+                {currentSection === sections.length - 1 && (
+                  <motion.div
+                    className="text-center mt-16 pb-8"
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 1 }}
                   >
-                    {/* Prev arrow */}
-                    <button
-                      onClick={goPrev}
-                      disabled={currentSection === 0}
-                      className="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 disabled:opacity-20"
-                      style={{
-                        border: '1px solid var(--nc-outline)',
-                        color: 'var(--nc-on-muted)',
-                        fontSize: 'var(--t-sm)',
-                      }}
-                    >
-                      ←
-                    </button>
-
-                    {/* Film-strip dots */}
-                    <div className="flex items-center gap-1.5">
-                      {sections.map((_, i) => (
-                        <button
-                          key={i}
-                          onClick={() => {
-                            if (i > currentSection) { setDirection(1); }
-                            else { setDirection(-1); }
-                            setCurrentSection(i);
-                          }}
-                          style={{
-                            width: i === currentSection ? 'clamp(18px,4vw,26px)' : '6px',
-                            height: '6px',
-                            borderRadius: '9999px',
-                            background: i === currentSection
-                              ? (i === sections.length - 1 ? '#e9c176' : '#ffb4a6')
-                              : 'rgba(240,236,255,0.2)',
-                            boxShadow: i === currentSection
-                              ? (i === sections.length - 1
-                                  ? '0 0 10px rgba(233,193,118,0.7)'
-                                  : '0 0 10px rgba(255,180,166,0.6)')
-                              : 'none',
-                            transition: 'all 0.35s cubic-bezier(0.34,1.56,0.64,1)',
-                            border: 'none',
-                            cursor: 'pointer',
-                            flexShrink: 0,
-                          }}
-                          aria-label={`Go to section ${i + 1}`}
-                        />
-                      ))}
-                    </div>
-
-                    {/* Section counter */}
-                    <span
-                      className="font-body"
-                      style={{ fontSize: 'var(--t-label)', color: 'rgba(216,194,190,0.5)', letterSpacing: '0.15em' }}
-                    >
-                      {currentSection + 1} / {sections.length}
-                    </span>
-
-                    {/* Next arrow */}
-                    <button
-                      onClick={goNext}
-                      disabled={currentSection === sections.length - 1}
-                      className="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 disabled:opacity-20"
-                      style={{
-                        border: '1px solid var(--nc-outline)',
-                        color: 'var(--nc-on-muted)',
-                        fontSize: 'var(--t-sm)',
-                      }}
-                    >
-                      →
-                    </button>
-                  </div>
-
-                  <p
-                    className="font-body uppercase mt-4"
-                    style={{ fontSize: 'var(--t-label)', letterSpacing: '0.25em', color: 'rgba(216,194,190,0.3)' }}
-                  >
-                    Scroll · Arrow keys · Swipe
-                  </p>
-
-                  {currentSection === sections.length - 1 && (
-                    <motion.div
-                      className="text-center mt-12 pb-8"
-                      initial={{ opacity: 0, y: 16 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 1 }}
-                    >
-                      <p className="font-display text-gradient leading-none mb-3" style={{ fontSize: 'var(--t-4xl)' }}>
-                        Made with all my love 💙✨
-                      </p>
-                      <p className="font-script" style={{ fontSize: 'var(--t-lead)', color: 'var(--nc-on-muted)' }}>
-                        For Priyanka — the rarest kind of person 🌸
-                      </p>
-                    </motion.div>
-                  )}
-                </div>
+                    <p className="font-display text-gradient leading-none mb-3" style={{ fontSize: 'var(--t-4xl)' }}>
+                      Made with all my love 💙✨
+                    </p>
+                    <p className="font-script" style={{ fontSize: 'var(--t-lead)', color: 'var(--nc-on-muted)' }}>
+                      For Priyanka — the rarest kind of person 🌸
+                    </p>
+                  </motion.div>
+                )}
               </div>
             </motion.div>
           </AnimatePresence>
+
+          {/* Floating Navigation Controls */}
+          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] flex flex-col items-center gap-2 pointer-events-auto w-auto max-w-[95vw]">
+            <AnimatePresence>
+              {canScrollDown && (
+                <motion.button
+                  onClick={scrollDown}
+                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                  className="mb-2 px-5 py-2.5 rounded-full font-body text-xs flex items-center gap-2 bg-pink-500/10 hover:bg-pink-500/20 text-pink-300 border border-pink-400/20 shadow-[0_4px_20px_rgba(236,72,153,0.2)] backdrop-blur-md cursor-pointer animate-bounce font-medium whitespace-nowrap"
+                >
+                  <span>Scroll Down</span>
+                  <span>↓</span>
+                </motion.button>
+              )}
+            </AnimatePresence>
+
+            <div
+              className="flex items-center gap-3 sm:gap-4 px-4 sm:px-6 py-2.5 sm:py-3 rounded-full"
+              style={{
+                background: 'var(--glass-bg)',
+                backdropFilter: 'var(--glass-blur)',
+                WebkitBackdropFilter: 'var(--glass-blur)',
+                border: '1px solid var(--nc-outline)',
+                boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+              }}
+            >
+              {/* Prev arrow */}
+              <button
+                onClick={goPrev}
+                disabled={currentSection === 0}
+                className="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 disabled:opacity-20 hover:bg-white/5 active:scale-90"
+                style={{
+                  border: '1px solid var(--nc-outline)',
+                  color: 'var(--nc-on-muted)',
+                  fontSize: 'var(--t-sm)',
+                  cursor: 'pointer'
+                }}
+              >
+                ←
+              </button>
+
+              {/* Film-strip dots */}
+              <div className="flex items-center gap-1.5">
+                {sections.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => {
+                      if (i > currentSection) { setDirection(1); }
+                      else { setDirection(-1); }
+                      setCurrentSection(i);
+                    }}
+                    style={{
+                      width: i === currentSection ? 'clamp(18px,4vw,26px)' : '6px',
+                      height: '6px',
+                      borderRadius: '9999px',
+                      background: i === currentSection
+                        ? (i === sections.length - 1 ? '#e9c176' : '#ffb4a6')
+                        : 'rgba(240,236,255,0.2)',
+                      boxShadow: i === currentSection
+                        ? (i === sections.length - 1
+                            ? '0 0 10px rgba(233,193,118,0.7)'
+                            : '0 0 10px rgba(255,180,166,0.6)')
+                        : 'none',
+                      transition: 'all 0.35s cubic-bezier(0.34,1.56,0.64,1)',
+                      border: 'none',
+                      cursor: 'pointer',
+                      flexShrink: 0,
+                    }}
+                    aria-label={`Go to section ${i + 1}`}
+                  />
+                ))}
+              </div>
+
+              {/* Section counter */}
+              <span
+                className="font-body text-xs sm:text-sm select-none"
+                style={{ color: 'rgba(216,194,190,0.5)', letterSpacing: '0.15em' }}
+              >
+                {currentSection + 1}/{sections.length}
+              </span>
+
+              {/* Next arrow/button */}
+              <button
+                onClick={goNext}
+                disabled={currentSection === sections.length - 1}
+                className="px-3 sm:px-4 h-8 rounded-full flex items-center gap-1.5 transition-all duration-200 disabled:opacity-20 bg-pink-500/10 hover:bg-pink-500/20 border border-pink-400/20 text-pink-300 font-semibold cursor-pointer"
+                style={{
+                  fontSize: '11px',
+                }}
+              >
+                <span>Next</span>
+                <span>→</span>
+              </button>
+            </div>
+          </div>
         </>
       )}
     </div>
